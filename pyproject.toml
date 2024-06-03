@@ -1,0 +1,54 @@
+[tool.poetry]
+name = "notae"
+version = "0.1.0"
+description = ""
+authors = ["Isaac Riley <isaac.r.riley@proton.me>"]
+readme = "README.md"
+packages = [{ include = "notae", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.13"
+matrix-commander = "^7.6.2"
+GitPython = "^3.1.43"
+pydantic = "^2.7.2"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.0.1"
+pylint = "^3.1"
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.21.0"
+mypy = "^1.10.0"
+pylint = "^3.1.0"
+pre-commit = "^3.7.0"
+semver = "^3.0.2"
+cyclonedx-bom = "^4.4.3"
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "^7.2.6"
+recommonmark = "^0.7.1"
+readthedocs-sphinx-ext = "^2.2.5"
+rinohtype = "^0.5.4"
+rst2pdf = "^0.101"
+pydata-sphinx-theme = "^0.15.2"
+sphinx-autodoc-typehints = "^2.1.0"
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+addopts = "--ignore=data"
+
+[tool.pylint]
+max-line-length = 120
+docstring-min-length=4
+extension-pkg-whitelist = ["cv2"]
+extension-pkg-allow-list = ["cv2"]
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+profile = "black"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
