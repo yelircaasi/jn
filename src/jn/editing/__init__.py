@@ -15,8 +15,15 @@ def wrapped_edit_subset(cfg) -> Callable[[], None]:
     return inner
 
 
-def wrapped_export_subset(cfg) -> Callable[[], None]:
+def wrapped_extract_subset(cfg) -> Callable[[], None]:
     def inner(arg_list: list[str]) -> None:
-        print("'wrapped_export_subset' is not yet implemented.")
+        print("'wrapped_extract_subset' is not yet implemented.")
+
+    return inner
+
+
+def wrapped_return_subset(cfg) -> Callable[[], None]:
+    def inner(arg_list: list[str]) -> None:
+        print("'wrapped_return_subset' is not yet implemented.")
 
     return inner
