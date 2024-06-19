@@ -1,10 +1,13 @@
 [tool.poetry]
-name = "notae"
+name = "jn"
 version = "0.1.0"
 description = ""
 authors = ["Isaac Riley <isaac.r.riley@proton.me>"]
 readme = "README.md"
-packages = [{ include = "notae", from = "src" }]
+packages = [{ include = "jn", from = "src" }]
+
+[tool.poetry.scripts]
+jn = 'jn.cli:main'
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.13"

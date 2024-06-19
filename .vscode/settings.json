@@ -1,0 +1,6 @@
+{
+    "workbench.colorTheme": "Base16 Dark Apathy",
+    "explorer.confirmDragAndDrop": false,
+    "security.workspace.trust.untrustedFiles": "open",
+    "window.titleBarStyle": "custom"
+}

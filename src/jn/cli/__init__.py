@@ -5,4 +5,4 @@ from .dispatcher import dispatch_from_arguments
 
 def main() -> None:
     args = argv[1:]
-    dispatch_from_arguments()
+    dispatch_from_arguments(args)
