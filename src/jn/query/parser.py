@@ -147,20 +147,74 @@ from .item_parser import make_item_parser
 
 # Step 1: Tokenizer
 def tokenize(dsl_code):
+    # alias =  {
+    #         "id": "=",
+    #         "tag": "",
+    #         "subtag": "_",
+    #         "type": "%",
+    #         "subtypeBinder": ":",
+    #         "status": "/",
+    #         "extra": "+",
+    #         "language": "€",
+    #         "progLang": "…",
+    #         "rating": "*",
+    #         "ratingExactnessModifier": "~~",
+    #         "dateModified": "^",
+    #         "cachedQuery": "@",
+    #         "dateCreated": "©"
+
+    #     }
+    # identifier_start = "".join(set((
+    #     alias["id"],
+    #     alias["tag"],
+    #     alias["subtag"],
+    #     alias["type"],
+    #     alias["status"],
+    #     alias["extra"],
+    #     alias["language"],
+    #     alias["progLang"],
+    #     alias["rating"],
+    #     alias[],
+    #     alias[],
+    # )))
+    # identifier_body = 
+
     token_specification = [
         ('LBRACE', r'\{'),        # Left bracket
         ('RBRACE', r'\}'),        # Right bracket
         ('AND', r'\.'),           # AND operator
         ('OR', r','),             # OR operator
-        ('IDENTIFIER', r'[a-z][A-Za-z]*|｟[^｠]+'),  # Identifiers
+        ('RATINGEXACT', r'~~'),
+        ('NOT', r'~'),
+        ('MATCHEMPTY', r'\?'),
+        ('LPATH', r'@\['),
+        ('RPATH', r'\]'),
+        ('REGEXOPEN', r'｟'),
+        ('REGEXCLOSE', r'｠'),
+        ('REGEX', r'(?<=｟)[^｠]+'),
+        ('BIND', r':'),
+        ('IDPREFIX', r'\='),
+        ('SUBTAGPREFIX', r'_'),
+        ('TYPEPREFIX', r'%'),
+        ('STATUSPREFIX', r'/'),
+        ('EXTRAPREFIX', r'\+'),
+        ('LANGUAGEPREFIX', r'€'),
+        ('PROGLANGPREFIX', r'…'),
+        ('DATEMODPREFIX', r'\^'),
+        ('RATINGPREFIX', r'\*'),
+        ('CACHEDPREFIX', r'@'),
+        ('DATECREATEDPREFIX', r'©'),
+        ('IDENTIFIER', r'[A-Za-z][A-Za-z0-9_-]*'),  # Identifiers
+        ('DATE', r'\d{4}-\d\d-\d\d'),
+        # ('IDENTIFIER', f'[=%+*^a-z_/€…~@©]~{0,2}[A-Za-z0-9:_-]*|｟[^｠]+'),  # Identifiers
+        # ('IDENTIFIER', r'[=%+*^a-z_/€…~@©]~{0,2}[A-Za-z0-9:_-]*|｟[^｠]+'),  # Identifiers
+        # ('IDENTIFIER', r'[\=\%\+\*\^a-z_/€…~@©]~{0,2}[A-Za-z0-9:_-]*|｟[^｠]+'),  # Identifiers
         ('SKIP', r'[ \t｠]+'),      # Skip over spaces and tabs
-        # ('REGEXOPEN', r'｟'),
-        # ('REGEXCLOSE', r'｠'),
-        # ('REGEX', r'(?<=｟)[^｠]+'),
+        
         ('MISMATCH', r'.'),       # Any other character
         
     ]
-    token_regex = '|'.join(f'(?P<{pair[0]}>{pair[1]})' for pair in token_specification)
+    token_regex = re.compile('|'.join(f'(?P<{pair[0]}>{pair[1]})' for pair in token_specification), re.UNICODE)
     tokens = []
     for mo in re.finditer(token_regex, dsl_code):
         kind = mo.lastgroup
@@ -172,15 +226,51 @@ def tokenize(dsl_code):
         tokens.append((kind, value))
     return tokens
 
+
+IDENT_TYPE = {
+        "IDENTIFIER",
+        'RATINGEXACT',
+        'NOT',
+        'MATCHEMPTY',
+        'LPATH',
+        'RPATH',
+        'REGEXOPEN',
+        'REGEXCLOSE',
+        'REGEX',
+        'BIND',
+        'IDPREFIX',
+        'SUBTAGPREFIX',
+        'TYPEPREFIX',
+        'STATUSPREFIX',
+        'EXTRAPREFIX',
+        'LANGUAGEPREFIX',
+        'PROGLANGPREFIX',
+        'DATEMODPREFIX',
+        'RATINGPREFIX',
+        'CACHEDPREFIX',
+        'DATECREATEDPREFIX',
+        'IDENTIFIER',
+        'DATE'
+    }
+
+
 # Step 2: Parser with Precedence
 def parse_expression(tokens):
+    
     def parse_primary(tokens):
         if not tokens:
             return None
         
         token = tokens.pop(0)
-        if token[0] == 'IDENTIFIER':
-            return ('IDENTIFIER', token[1])
+        if token[0] in IDENT_TYPE:
+            # return ('IDENTIFIER', token[1])
+            new_tokens = [token]
+            while tokens and tokens[0][0] in IDENT_TYPE:
+                print(tokens)
+                token = tokens.pop(0)
+                new_tokens.append(token)
+                # print(new_tokens)
+            return tuple(new_tokens)
         elif token[0] == 'LBRACE':
             expr = parse_expression(tokens)
             if tokens and tokens[0][0] == 'RBRACE':
@@ -190,9 +280,13 @@ def parse_expression(tokens):
 
     def parse_and(tokens):
         left = parse_primary(tokens)
+        print("left")
+        print(left)
         while tokens and tokens[0][0] == 'AND':
             tokens.pop(0)
             right = parse_primary(tokens)
+            print("right")
+            print(right)
             left = ('AND', left, right)
         return left
 
@@ -206,10 +300,16 @@ def parse_expression(tokens):
 
     return parse_or(tokens)
 
+
+
+
 # Step 3: Dictionary Construction
 def generate_dict_structure(ast):
-    if ast[0] == 'IDENTIFIER':
-        return ast[1]
+    def parse_item(item: tuple[tuple[str, str]]) -> dict[str, str]:
+        return dict(item)
+    
+    if ast[0][0] in IDENT_TYPE:
+        return parse_item(ast)
     elif ast[0] == 'AND':
         left = generate_dict_structure(ast[1])
         right = generate_dict_structure(ast[2])

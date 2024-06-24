@@ -20,7 +20,6 @@ index_dict = {
     "tagF": ["fileB", "fileE", "fileD"],
     "tagG": ["fileB", "fileC", "fileD"],
     "｟^In\\sthe\\sbeginning": ["fileB", "fileC", "fileF"],
-
 }
 
 
