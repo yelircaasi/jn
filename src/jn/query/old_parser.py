@@ -281,10 +281,6 @@ def parse_expression(tokens):
         token = tokens.pop(0)
         if token[0] in IDENT_TYPES:
             # return ('IDENTIFIER', token[1])
-            if token[0] in PREFIX_TYPES:
-                expr = parse_homogeneous(tokens, token[0])
-                return ("EXPR", expr)
-
             new_tokens = [token]
             while tokens and tokens[0][0] in IDENT_TYPES:
                 print(tokens)
@@ -330,7 +326,7 @@ def generate_dict_structure(ast):
     def parse_item(item: tuple[tuple[str, str]]) -> dict[str, str]:
         return dict(item)
     
-    if ast[0][0] in IDENT_TYPE:
+    if ast[0][0] in IDENT_TYPES:
         return parse_item(ast)
     elif ast[0] == 'AND':
         left = generate_dict_structure(ast[1])
