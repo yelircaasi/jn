@@ -143,7 +143,8 @@ Tentative:
 import re
 from typing import Callable
 
-from .item_parser import make_item_parser
+# from .item_parser import make_item_parser
+make_item_parser = None
 
 # Step 1: Tokenizer
 def tokenize(dsl_code):
@@ -283,7 +284,6 @@ def parse_expression(tokens):
             # return ('IDENTIFIER', token[1])
             new_tokens = [token]
             while tokens and tokens[0][0] in IDENT_TYPES:
-                print(tokens)
                 token = tokens.pop(0)
                 new_tokens.append(token)
                 # print(new_tokens)
@@ -298,13 +298,9 @@ def parse_expression(tokens):
 
     def parse_and(tokens):
         left = parse_primary(tokens)
-        print("left")
-        print(left)
         while tokens and tokens[0][0] == 'AND':
             tokens.pop(0)
             right = parse_primary(tokens)
-            print("right")
-            print(right)
             left = ('AND', left, right)
         return left
 
@@ -342,10 +338,25 @@ def generate_dict_structure(ast):
 
 # Putting it all together
 def dsl_to_dict(dsl_code):
+    print(dsl_code)
+    print()
     tokens = tokenize(dsl_code)
+    print(tokens)
+    print()
     ast = parse_expression(tokens)
+    print(ast)
+    print()
     dict_structure = generate_dict_structure(ast)
+    print(dict_structure)
+    print()
     return dict_structure
+
+q = "tagA,｟^In the beginning｠.{tagB,tagC}.{tagD,{tagE.tagF.tagG}}"
+dsl_to_dict(q)
+q = "=idA,asdf,｟^In the beginning｠._subtagA,%typeA:subtypeC,/status,+extraA,€EN,…python,*~~ratingB,*ratingA,^2024-05-07,@cached,©2021-04-04"
+dsl_to_dict(q)
+q = "%software.noteManagement._appFlowy.*A"
+dsl_to_dict(q)
 
 '''
 # Example usage
@@ -392,6 +403,7 @@ def make_condition_from_dict(config: ...) -> Callable:
             raise ValueError
         
     return condition_from_dict
+
 
 
 

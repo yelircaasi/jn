@@ -2,7 +2,7 @@
   description = "An flake to use a Python poetry project in an FHS environment when poetry2nix is uncooperative";
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    nixpkgs.url = "github:NixOS/nixpkgs/240b1d794bbfca3522dec880a3aa300932bbfd98";
+    nixpkgs.url = "github:NixOS/nixpkgs";
   };
   outputs = {
     self,

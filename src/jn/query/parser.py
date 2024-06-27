@@ -251,7 +251,7 @@ IDENT_TYPES = {
         'PREFIX_DATECREATED',
         'DATE'
     }
-PREFIX_TYPES = {
+PREFIX_TO_TYPE = {
         'PREFIX_ID': "ID",
         'PREFIX_SUBTAG': "SUBTAG",
         'PREFIX_TYPE': "TYPE",
@@ -266,11 +266,45 @@ PREFIX_TYPES = {
 }
 
 
+
 # Step 2: Parser with Precedence
 
 def parse_homogeneous(tokens, attr):
-    ...
     # need to make a sub-parser for single-attribute expressions like %{xxx,yyy,zzz.aaa}
+    def parse_primary(tokens):
+        if not tokens:
+            return None
+        
+        token = tokens.pop(0)
+        if token[0] == "IDENTIFIER":
+            return (attr, token[1])
+
+        elif token[0] == 'LBRACE':
+            expr = parse_homogeneous(tokens, attr)
+            if tokens and tokens[0][0] == 'RBRACE':
+                tokens.pop(0)
+            return ('EXPR', expr)
+        raise SyntaxError(f"Unexpected token: {token}")
+
+
+    def parse_and(tokens):
+        left = parse_primary(tokens)
+        while tokens and tokens[0][0] == 'AND':
+            tokens.pop(0)
+            right = parse_primary(tokens)
+            left = ('AND', left, right)
+        return left
+
+    def parse_or(tokens):
+        left = parse_and(tokens)
+        while tokens and tokens[0][0] == 'OR':
+            tokens.pop(0)
+            right = parse_and(tokens)
+            left = ('OR', left, right)
+        return left
+
+    return parse_or(tokens)
+
 
 def parse_expression(tokens):
     
@@ -282,7 +316,7 @@ def parse_expression(tokens):
         if token[0] in IDENT_TYPES:
             # return ('IDENTIFIER', token[1])
             if token[0] in PREFIX_TYPES:
-                expr = parse_homogeneous(tokens, token[0])
+                expr = parse_homogeneous(tokens, PREFIX_TO_TYPE[token[0]])
                 return ("EXPR", expr)
 
             new_tokens = [token]
@@ -302,13 +336,9 @@ def parse_expression(tokens):
 
     def parse_and(tokens):
         left = parse_primary(tokens)
-        print("left")
-        print(left)
         while tokens and tokens[0][0] == 'AND':
             tokens.pop(0)
             right = parse_primary(tokens)
-            print("right")
-            print(right)
             left = ('AND', left, right)
         return left
 
@@ -330,7 +360,7 @@ def generate_dict_structure(ast):
     def parse_item(item: tuple[tuple[str, str]]) -> dict[str, str]:
         return dict(item)
     
-    if ast[0][0] in IDENT_TYPE:
+    if ast[0][0] in IDENT_TYPES:
         return parse_item(ast)
     elif ast[0] == 'AND':
         left = generate_dict_structure(ast[1])
