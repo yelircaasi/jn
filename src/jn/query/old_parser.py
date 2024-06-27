@@ -190,9 +190,9 @@ def tokenize(dsl_code):
         ('MATCHEMPTY', r'\?'),
         ('LPATH', r'@\['),
         ('RPATH', r'\]'),
-        ('REGEXOPEN', r'｟'),
-        ('REGEXCLOSE', r'｠'),
-        ('REGEX', r'(?<=｟)[^｠]+'),
+        ('REGEXOPEN', r'⸨'),
+        ('REGEXCLOSE', r'⸩'),
+        ('REGEX', r'(?<=⸨)[^⸩]+'),
         ('BIND', r':'),
         ('PREFIX_ID', r'\='),
         ('PREFIX_SUBTAG', r'_'),
@@ -207,10 +207,10 @@ def tokenize(dsl_code):
         ('PREFIX_DATECREATED', r'©'),
         ('IDENTIFIER', r'[A-Za-z][A-Za-z0-9_-]*'),  # Identifiers
         ('DATE', r'\d{4}-\d\d-\d\d'),
-        # ('IDENTIFIER', f'[=%+*^a-z_/€…~@©]~{0,2}[A-Za-z0-9:_-]*|｟[^｠]+'),  # Identifiers
-        # ('IDENTIFIER', r'[=%+*^a-z_/€…~@©]~{0,2}[A-Za-z0-9:_-]*|｟[^｠]+'),  # Identifiers
-        # ('IDENTIFIER', r'[\=\%\+\*\^a-z_/€…~@©]~{0,2}[A-Za-z0-9:_-]*|｟[^｠]+'),  # Identifiers
-        ('SKIP', r'[ \t｠]+'),      # Skip over spaces and tabs
+        # ('IDENTIFIER', f'[=%+*^a-z_/€…~@©]~{0,2}[A-Za-z0-9:_-]*|⸨[^⸩]+'),  # Identifiers
+        # ('IDENTIFIER', r'[=%+*^a-z_/€…~@©]~{0,2}[A-Za-z0-9:_-]*|⸨[^⸩]+'),  # Identifiers
+        # ('IDENTIFIER', r'[\=\%\+\*\^a-z_/€…~@©]~{0,2}[A-Za-z0-9:_-]*|⸨[^⸩]+'),  # Identifiers
+        ('SKIP', r'[ \t⸩]+'),      # Skip over spaces and tabs
         
         ('MISMATCH', r'.'),       # Any other character
         
@@ -351,9 +351,9 @@ def dsl_to_dict(dsl_code):
     print()
     return dict_structure
 
-q = "tagA,｟^In the beginning｠.{tagB,tagC}.{tagD,{tagE.tagF.tagG}}"
+q = "tagA,⸨^In the beginning⸩.{tagB,tagC}.{tagD,{tagE.tagF.tagG}}"
 dsl_to_dict(q)
-q = "=idA,asdf,｟^In the beginning｠._subtagA,%typeA:subtypeC,/status,+extraA,€EN,…python,*~~ratingB,*ratingA,^2024-05-07,@cached,©2021-04-04"
+q = "=idA,asdf,⸨^In the beginning⸩._subtagA,%typeA:subtypeC,/status,+extraA,€EN,…python,*~~ratingB,*ratingA,^2024-05-07,@cached,©2021-04-04"
 dsl_to_dict(q)
 q = "%software.noteManagement._appFlowy.*A"
 dsl_to_dict(q)

@@ -17,10 +17,6 @@ def parse_id(subquery: str) -> Callable[[dict[str, Any]], bool]:
         return lambda d: sq == d["id"]
 
 
-def parse_tag_dsl(tag_subquery: str, include_empty: bool = False) -> Callable[[dict[str, Any], bool]]:
-    ...
-
-
 def parse_tags(subquery: str) -> Callable[[dict[str, Any]], bool]:
     assert re.match("^\?[A-Za-z\[\]\.,]", subquery)
     subquery += ":"

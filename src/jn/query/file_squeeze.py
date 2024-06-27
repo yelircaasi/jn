@@ -1,7 +1,7 @@
 """
 {'OR': ['tagA',
   {'AND': [
-    {'AND': ['｟^In\\sthe\\sbeginning', {'OR': ['tagB', 'tagC']}]},
+    {'AND': ['⸨^In\\sthe\\sbeginning', {'OR': ['tagB', 'tagC']}]},
     {'OR': [
       'tagD', 
       {'AND': [
@@ -19,7 +19,7 @@ index_dict = {
     "tagE": ["fileB", "fileC", "fileD"],
     "tagF": ["fileB", "fileE", "fileD"],
     "tagG": ["fileB", "fileC", "fileD"],
-    "｟^In\\sthe\\sbeginning": ["fileB", "fileC", "fileF"],
+    "⸨^In\\sthe\\sbeginning": ["fileB", "fileC", "fileF"],
 }
 
 
