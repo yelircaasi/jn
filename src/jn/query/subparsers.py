@@ -167,3 +167,48 @@ def parse_date_created(tokens: list[tuple[str, str]]) -> tuple[tuple]:
         return ("DATE_CREATED", ("DATE", token[1]), ("INTERPRETATION", "NEWEST"))
     if typ == "EXACTLY":
         return ("DATE_CREATED", ("DATE", token[1]), ("INTERPRETATION", "EXACT"))
+    
+
+def parse_id(tokens: list[tuple[str, str]]) -> tuple[tuple]:
+    """
+    
+    """
+    token = tokens.pop(0)
+    typ = token[0]
+    if typ == "ID":
+        return ("ID", ("STRING", token[1]))
+    if typ == "LEFT_BRACKET":
+        return parse_homogeneous(tokens, "ID")
+    raise ValueError
+
+
+def parse_id(tokens: list[tuple[str, str]]) -> tuple[tuple]:
+    """
+    
+    """
+    token = tokens.pop(0)
+    typ = token[0]
+    if typ == "ID":
+        return ("ID", ("STRING", token[1]))
+    if typ == "LEFT_BRACKET":
+        return parse_homogeneous(tokens, "ID")
+    raise ValueError
+
+
+def parse_tag():
+    ...
+
+
+non_tag_dispatcher = PREFIX_TO_TYPE = {
+        'PREFIX_ID': parse_id,
+        # 'PREFIX_SUBTAG': parse_subtag,
+        'PREFIX_TYPE': parse_type,
+        'PREFIX_STATUS': parse_status,
+        'PREFIX_EXTRA': parse_extra,
+        'PREFIX_LANGUAGE': parse_language,
+        'PREFIX_PROGLANG': parse_proglang,
+        'PREFIX_DATEMOD': parse_date_modified,
+        'PREFIX_RATING': parse_rating,
+        'PREFIX_CACHED': parse_cached,
+        'PREFIX_DATECREATED': parse_date_created,
+}

@@ -141,13 +141,20 @@ def parse_expression(tokens):
             return None
         
         token = tokens.pop(0)
-        if token[0] in IDENT_TYPES:
+        if (toktype := token[0]) in IDENT_TYPES:
+            print(toktype)
             # return ('IDENTIFIER', token[1])
-            if token[0] == "IDENTIFIER":
+            if toktype == "IDENTIFIER":
+                if tokens and tokens[0][0] == "BIND":
+                    tokens.pop(0)
+                    _, subtag = tokens.pop(0)
+                    return ("TAG", ("STRING", token[1]), ("SUBTAG", subtag))
                 return ("TAG", ("STRING", token[1]))
-        if token[0] in PREFIX_TO_TYPE:
-            expr = parse_homogeneous(tokens, PREFIX_TO_TYPE[token[0]])
+        if toktype in PREFIX_TO_TYPE:
+            expr = parse_homogeneous(tokens, PREFIX_TO_TYPE[toktype])
+            # expr = non_tag_dispatcher[toktype](tokens)
             return ("EXPR", expr)
+            
 
         # new_tokens = [token]
         # while tokens and tokens[0][0] in IDENT_TYPES:
@@ -188,7 +195,7 @@ def parse_expression(tokens):
 def generate_dict_structure(ast):
     def parse_item(item: tuple[tuple[str, tuple[str, str]]]) -> dict[str, str]:
         d = {}
-        d.update({ast[0]: {ast[1][0]: ast[1][1]}})
+        d.update({ast[0]: dict(ast[1:])})
         return d
 
     if ast[0] in {"STRING", "REGEX"}:
