@@ -200,15 +200,14 @@ def parse_tag():
 
 
 non_tag_dispatcher = PREFIX_TO_TYPE = {
-        'PREFIX_ID': parse_id,
-        # 'PREFIX_SUBTAG': parse_subtag,
-        'PREFIX_TYPE': parse_type,
-        'PREFIX_STATUS': parse_status,
-        'PREFIX_EXTRA': parse_extra,
-        'PREFIX_LANGUAGE': parse_language,
-        'PREFIX_PROGLANG': parse_proglang,
-        'PREFIX_DATEMOD': parse_date_modified,
-        'PREFIX_RATING': parse_rating,
-        'PREFIX_CACHED': parse_cached,
+        'PREFIX_ID':          parse_id,
+        'PREFIX_TYPE':        parse_type,
+        'PREFIX_STATUS':      parse_status,
+        'PREFIX_EXTRA':       parse_extra,
+        'PREFIX_LANGUAGE':    parse_language,
+        'PREFIX_PROGLANG':    parse_proglang,
+        'PREFIX_DATEMOD':     parse_date_modified,
+        'PREFIX_RATING':      parse_rating,
+        'PREFIX_CACHED':      parse_cached,
         'PREFIX_DATECREATED': parse_date_created,
 }
