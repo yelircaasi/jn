@@ -29,6 +29,7 @@ def wrapped_extract_subset(cfg) -> Callable[[], None]:
 def wrapped_test_query(cfg) -> Callable[[], None]:
     def inner(arg_list: list[str]) -> None:
         print("'wrapped_test_query' is not yet fully implemented.\n")
+        print(arg_list)
         query = "".join(arg_list)
         parse_query(query)
 

@@ -22,154 +22,30 @@ from typing import Callable
 
 from .item_parser import make_item_parser
 from .subparsers import parse_homogeneous
-
-# Step 1: Tokenizer
-def tokenize(dsl_code):
-    # alias =  {
-    #         "id": "=",
-    #         "tag": "",
-    #         "subtag": "_",
-    #         "type": "%",
-    #         "subtypeBinder": ":",
-    #         "status": "/",
-    #         "extra": "+",
-    #         "language": "€",
-    #         "progLang": "…",
-    #         "rating": "*",
-    #         "ratingExactnessModifier": "~~",
-    #         "dateModified": "^",
-    #         "cachedQuery": "@",
-    #         "dateCreated": "©"
-
-    #     }
-    # identifier_start = "".join(set((
-    #     alias["id"],
-    #     alias["tag"],
-    #     alias["subtag"],
-    #     alias["type"],
-    #     alias["status"],
-    #     alias["extra"],
-    #     alias["language"],
-    #     alias["progLang"],
-    #     alias["rating"],
-    #     alias[],
-    #     alias[],
-    # )))
-    # identifier_body = 
-
-    token_specification = [
-        ('LBRACE', r'\{'),        # Left bracket
-        ('RBRACE', r'\}'),        # Right bracket
-        ('AND', r'\.'),           # AND operator
-        ('OR', r','),             # OR operator
-        ('RATINGEXACT', r'~~'),
-        ('EXACTLY', r'~~'),
-        ('NOT', r'~'),
-        ('STRINGEMPTY', r'\?'),
-        ('LPATH', r'@\['),
-        ('RPATH', r'\]'),
-        ('REGEX_OPEN', r'⸨'),
-        ('REGEX_CLOSE', r'⸩'),
-        ('REGEX', r'(?<=⸨)[^⸩]+'),
-        ('BIND', r':'),
-        ('PREFIX_ID', r'\='),
-        # ('PREFIX_SUBTAG', r'_'),
-        ('PREFIX_TYPE', r'%'),
-        ('PREFIX_STATUS', r'/'),
-        ('PREFIX_EXTRA', r'\+'),
-        ('PREFIX_LANGUAGE', r'€'),
-        ('PREFIX_PROGLANG', r'_'), #r'…'),
-        ('PREFIX_DATEMOD', r'\^'),
-        ('PREFIX_RATING', r'\*'),
-        ('PREFIX_CACHED', r'@'),
-        ('PREFIX_DATECREATED', r'©'),
-        ('IDENTIFIER', r'[A-Za-z][A-Za-z0-9_-]*'),  # Identifiers
-        ('DATE', r'\d{4}-\d\d-\d\d'),
-        # ('IDENTIFIER', f'[=%+*^a-z_/€…~@©]~{0,2}[A-Za-z0-9:_-]*|⸨[^⸩]+'),  # Identifiers
-        # ('IDENTIFIER', r'[=%+*^a-z_/€…~@©]~{0,2}[A-Za-z0-9:_-]*|⸨[^⸩]+'),  # Identifiers
-        # ('IDENTIFIER', r'[\=\%\+\*\^a-z_/€…~@©]~{0,2}[A-Za-z0-9:_-]*|⸨[^⸩]+'),  # Identifiers
-        ('SKIP', r'[ \t⸩]+'),      # Skip over spaces and tabs
-        
-        ('MISSTRING', r'.'),       # Any other character
-        
-    ]
-    token_regex = re.compile('|'.join(f'(?P<{pair[0]}>{pair[1]})' for pair in token_specification), re.UNICODE)
-    tokens = []
-    for mo in re.finditer(token_regex, dsl_code):
-        kind = mo.lastgroup
-        value = mo.group()
-        if kind == 'SKIP':
-            continue
-        elif kind == 'MISSTRING':
-            raise RuntimeError(f'Unexpected character: {value}')
-        tokens.append((kind, value))
-    return tokens
-
-
-IDENT_TYPES = {
-        "IDENTIFIER",
-        "TAG",
-        'RATINGEXACT',
-        'NOT',
-        'STRINGEMPTY',
-        'LPATH',
-        'RPATH',
-        'REGEX_OPEN',
-        'REGEX_CLOSE',
-        'REGEX',
-        'BIND',
-        'ID',
-        'SUBTAG',
-        'TYPE',
-        'STATUS',
-        'EXTRA',
-        'LANGUAGE',
-        'PROGLANG',
-        'DATEMOD',
-        'RATING',
-        'CACHED',
-        'DATECREATED',
-        'DATE',
-    }
-PREFIX_TO_TYPE = {
-        'PREFIX_ID': "ID",
-        'PREFIX_SUBTAG': "SUBTAG",
-        'PREFIX_TYPE': "TYPE",
-        'PREFIX_STATUS': "STATUS",
-        'PREFIX_EXTRA': "EXTRA",
-        'PREFIX_LANGUAGE': "LANGUAGE",
-        'PREFIX_PROGLANG': "PROGLANG",
-        'PREFIX_DATEMOD': "DATEMOD",
-        'PREFIX_RATING': "RATING",
-        'PREFIX_CACHED': "CACHED",
-        'PREFIX_DATECREATED': "DATECREATED",
-}
-
-
-
-# Step 2: Parser with Precedence
-
-
-
+from .lists import IDENT_TYPES, PREFIX_TO_TYPE
+from .tokenizer import tokenize
+from .subparsers import non_tag_dispatcher
 
 def parse_expression(tokens):
     
     def parse_primary(tokens):
+        print('p')
         if not tokens:
             return None
         
         token = tokens.pop(0)
 
         if (toktype := token[0]) in IDENT_TYPES:
-            print(toktype)
+            print(toktype, token[1])
             if toktype == "IDENTIFIER":
                 if tokens and tokens[0][0] == "BIND":
                     tokens.pop(0)
                     _, subtag = tokens.pop(0)
                     return ("TAG", ("STRING", token[1]), ("SUBTAG", ("STRING", subtag))) # queries of the type tag:{subtag1.subtag2} currenty note supported; instead tag:subtag1.tag:subtag2
                 return ("TAG", ("STRING", token[1]))
-        if toktype in PREFIX_TO_TYPE:
-            expr = parse_homogeneous(tokens, PREFIX_TO_TYPE[toktype])
+        if toktype in non_tag_dispatcher:
+            # expr = parse_homogeneous(tokens, PREFIX_TO_TYPE[toktype])
+            expr = non_tag_dispatcher[toktype](tokens)
             return ("EXPR", expr)
         if token[0] == 'LBRACE':
             expr = parse_expression(tokens)
@@ -180,6 +56,7 @@ def parse_expression(tokens):
         raise SyntaxError(f"Unexpected token: {token}")
 
     def parse_and(tokens):
+        print('a')
         left = parse_primary(tokens)
         while tokens and tokens[0][0] == 'AND':
             tokens.pop(0)
@@ -188,6 +65,7 @@ def parse_expression(tokens):
         return left
 
     def parse_or(tokens):
+        print('o')
         left = parse_and(tokens)
         while tokens and tokens[0][0] == 'OR':
             tokens.pop(0)

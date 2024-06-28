@@ -77,55 +77,63 @@ def parse_status(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     typ = token[0]
     if typ == "IDENTIFIER":
         return ("STATUS", ("STRING", token[1]))
-    if typ == "LEFT_BRACKET":
+    if typ == "LBRACE":
         return parse_homogeneous(tokens, "STATUS")
     raise ValueError
 
 
 def parse_extra(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     """
-    
+    +extraAttrName:extraAttrValue
     """
-    
+    toktype, name = tokens.pop(0)
+    assert toktype == "IDENTIFIER"
+    toktype, bind = tokens.pop(0)
+    assert toktype == "BIND"
+    tokype, value = tokens.pop(0)
+    return ("EXTRA", ("NAME", name), ("STRING", value))
 
 
 def parse_type(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     """
-    
+    %type
+    %type:subtype
     """
-    token = tokens.pop(0)
-    typ = token[0]
-    assert typ == "TYPE"
-    type_string = token[1]
-    if tokens and tokens[0][0] == "PREFIX_SUBTYPE":
+    print(tokens)
+    toktype, type_string = tokens.pop(0)
+    assert toktype == "IDENTIFIER"
+    if tokens and tokens[0][0] == "BIND":
         tokens.pop(0)
-        token = tokens.pop(0)
-        assert token[0] == "IDENTIFIER"
-        return ("TYPE", ("STRING", type_string), ("SUBTYPE", ("STRING", token[1])))
+        toktype, subtype_string = tokens.pop(0)
+        assert toktype == "IDENTIFIER"
+        return ("TYPE", ("STRING", type_string), ("SUBTYPE", ("STRING", subtype_string)))
+    return ("TYPE", ("STRING", type_string))
 
 
 def parse_language(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     """
-    
+    €EN
+    €{EN,DE,FR}
     """
     token = tokens.pop(0)
     typ = token[0]
     if typ == "IDENTIFIER":
         return ("LANGUAGE", ("STRING", token[1]))
-    if typ == "LEFT_BRACKET":
+    if typ == "LBRACE":
         return parse_homogeneous(tokens, "LANGUAGE")
     raise ValueError
 
 
 def parse_proglang(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     """
-    …
+    _python
+    _{python.{haskell,rust}}
     """
     token = tokens.pop(0)
     typ = token[0]
     if typ == "IDENTIFIER":
         return ("PROGLANG", ("STRING", token[1]))
-    if typ == "LEFT_BRACKET":
+    if typ == "LBRACE":
         return parse_homogeneous(tokens, "PROGLANG")
     raise ValueError
 
@@ -138,7 +146,7 @@ def parse_rating(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     typ = token[0]
     if typ == "IDENTIFIER":
         return ("RATING", ("STRING", token[1]))
-    if typ == "LEFT_BRACKET":
+    if typ == "LBRACE":
         return parse_homogeneous(tokens, "RATING")
     raise ValueError
 
@@ -177,7 +185,7 @@ def parse_id(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     typ = token[0]
     if typ == "ID":
         return ("ID", ("STRING", token[1]))
-    if typ == "LEFT_BRACKET":
+    if typ == "LBRACE":
         return parse_homogeneous(tokens, "ID")
     raise ValueError
 
@@ -190,7 +198,7 @@ def parse_id(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     typ = token[0]
     if typ == "ID":
         return ("ID", ("STRING", token[1]))
-    if typ == "LEFT_BRACKET":
+    if typ == "LBRACE":
         return parse_homogeneous(tokens, "ID")
     raise ValueError
 
@@ -199,7 +207,7 @@ def parse_tag():
     ...
 
 
-non_tag_dispatcher = PREFIX_TO_TYPE = {
+non_tag_dispatcher = {
         'PREFIX_ID':          parse_id,
         'PREFIX_TYPE':        parse_type,
         'PREFIX_STATUS':      parse_status,
