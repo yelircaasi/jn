@@ -23,7 +23,7 @@ from typing import Callable
 from .item_parser import make_item_parser
 from .subparsers import parse_homogeneous
 from .lists import IDENT_TYPES, PREFIX_TO_TYPE
-from .tokenizer import tokenize
+from .tokenizer import make_tokenizer
 from .subparsers import non_tag_dispatcher
 
 def parse_expression(tokens):
@@ -142,6 +142,7 @@ def flatten_dict_structure(d: dict) -> dict:
     
 
 def dsl_to_dict(dsl_code):
+    tokenize = make_tokenizer(None)
     tokens = tokenize(dsl_code)
     ast = parse_expression(tokens)
     dict_structure = generate_dict_structure(ast)

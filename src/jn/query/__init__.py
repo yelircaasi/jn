@@ -1,10 +1,11 @@
 import json
 
-from .parser import tokenize, parse_expression, generate_dict_structure, flatten_dict_structure
+from .parser import make_tokenizer, parse_expression, generate_dict_structure, flatten_dict_structure
 
 
 
 def parse_query(query: str) -> None:
+    tokenize = make_tokenizer(None) # TODO: config
     print(query)
     print()
     tokens = tokenize(query)
