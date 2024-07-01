@@ -31,7 +31,7 @@ def wrapped_test_query(cfg) -> Callable[[], None]:
         print("'wrapped_test_query' is not yet fully implemented.\n")
         print(arg_list)
         query = "".join(arg_list)
-        parse_query(query)
+        parsed = parse_query(query)
 
     return inner
 

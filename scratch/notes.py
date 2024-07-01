@@ -12,12 +12,6 @@ DEFAULT_NOTE = {"id": None, "text": [], "status": "", "rating": "", "tags": [], 
 VALID_ADDITIONAL_KEYS = {"id", "tags", "status", "priority", "rating"}
 
 
-
-
-
-
-
-
 def open_notes():
     with open(NOTES_PATH) as f:
         return json.load(f)
@@ -30,13 +24,16 @@ def save_notes(notes: dict) -> None:
 
 
 def pretty_print_note(d: dict) -> str:
-    return "\n".join([
-        f"\n=============== {d['id']:^4} ===============",
-        *d["text"],
-        f"    tags: {' | '.join(d['tags'])}",
-        f"    status: {d['status']}",
-        "------------------------------------"
-    ])
+    return "\n".join(
+        [
+            f"\n=============== {d['id']:^4} ===============",
+            *d["text"],
+            f"    tags: {' | '.join(d['tags'])}",
+            f"    status: {d['status']}",
+            "------------------------------------",
+        ]
+    )
+
 
 def validate_and_convert_value(key: str, value: str) -> Any:
     if value is None:
@@ -104,7 +101,7 @@ def parse_query(args: list[str]) -> Callable:
     print(".")
     conditions = tuple(map(validate_and_convert_condition, args))
     return lambda d: all(map(lambda f: f(d), conditions))
-    
+
 
 def split_notes(args: list[str]) -> None:
     notes = open_notes()
@@ -115,9 +112,7 @@ def split_notes(args: list[str]) -> None:
     save_notes(notes)
 
 
-def join_notes() -> None:
-    ...
-
+def join_notes() -> None: ...
 
 
 def add_note(args: list[str]) -> None:
@@ -154,18 +149,19 @@ def summarize_visual(): ...
 def tui(): ...
 def sort(): ...
 
+
 def fetch():
     # need to import matrix-commander to reverse-engineer 'matrix-commander -r '!KeeTeSkGHgkKZTrbpT:matrix.org' --listen-self --listen tail  --tail 15'
     ...
 
+
 if __name__ == "__main__":
     clargs = sys.argv[1:]
 
-    
     match len(clargs):
         case 0:
             command = "tui"
-        case 1: 
+        case 1:
             if (first := clargs[0]).startswith("file:") or first.endswith(".json"):
                 file_name = first.split(":")[-1]
                 command = "tui"
@@ -179,7 +175,7 @@ if __name__ == "__main__":
             else:
                 command = first
                 args = clargs[1:]
-            
+
     print(command)
 
     function: Callable[[str, str, list[str]], None] = {
@@ -200,4 +196,4 @@ if __name__ == "__main__":
 
     function(args)
 
-#TODO: refactor argument parsing to a separate function, to be a bit more elegant and robust, as well as more testable
+# TODO: refactor argument parsing to a separate function, to be a bit more elegant and robust, as well as more testable

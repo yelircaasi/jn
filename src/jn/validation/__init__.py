@@ -7,6 +7,7 @@ from ..types import NoteDict
 
 # note_adapter = TypeAdapter(NoteDict)
 
+
 def wrapped_validate_notes(cfg) -> Callable[[], None]:
     def inner(arg_list: list[str]) -> None:
         print("'wrapped_validate_notes' is not yet implemented.")
@@ -15,11 +16,3 @@ def wrapped_validate_notes(cfg) -> Callable[[], None]:
 
 
 # __all__ = ["note_adapter", "wrapped_validate"]
-
-
-
-
-
-
-
-

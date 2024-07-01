@@ -3,7 +3,13 @@ from typing import Callable
 # from .arg_parser import parse_args
 
 from ..configuration import initialize_config
-from ..editing import wrapped_add_note, wrapped_edit_subset, wrapped_extract_subset, wrapped_return_subset, wrapped_test_query
+from ..editing import (
+    wrapped_add_note,
+    wrapped_edit_subset,
+    wrapped_extract_subset,
+    wrapped_return_subset,
+    wrapped_test_query,
+)
 from ..display import wrapped_show_subset
 from ..summary import wrapped_summarize_notes, wrapped_summarize_notes_visual
 from ..sync import wrapped_commit_and_push, wrapped_fetch_from_everywhere
@@ -17,9 +23,10 @@ def wrapped_help(cfg) -> Callable[[], None]:
 
     return inner
 
+
 def dispatch_from_arguments(args: list[str]) -> Callable:
 
-    config = 42 #initialize_config()
+    config = 42  # initialize_config()
 
     # command, positional, attributes, options = parse_args(args)
     command = args[0] if args else "help"
@@ -38,7 +45,7 @@ def dispatch_from_arguments(args: list[str]) -> Callable:
         "fetch": wrapped_fetch_from_everywhere,
         "tui": wrapped_tui_loop,
         "validate": wrapped_validate_notes,
-        "test-query": wrapped_test_query
+        "test-query": wrapped_test_query,
     }[command](config)
 
     print(type(function))

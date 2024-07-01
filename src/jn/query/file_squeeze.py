@@ -26,9 +26,11 @@ index_dict = {
 def get_files(parse_item: dict | str, index_dict: dict) -> list[str]:
     def get_files_from_or(or_list: list[str | dict]) -> set[str]:
         return set.union(*map(set, filter(lambda x: x is not None, map(lambda x: get_files(x, index_dict), or_list))))
-        
+
     def get_files_from_and(and_list: list[str | dict]) -> list[str]:
-        return set.intersection(*map(set, filter(lambda x: x is not None, map(lambda x: get_files(x, index_dict), and_list))))
+        return set.intersection(
+            *map(set, filter(lambda x: x is not None, map(lambda x: get_files(x, index_dict), and_list)))
+        )
 
     if isinstance(parse_item, dict):
         key = list(parse_item)[0]

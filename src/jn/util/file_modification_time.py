@@ -5,7 +5,7 @@ import time
 
 def time_created_(path: Path | str) -> str:
     return os.path.getctime(path)
-    
+
 
 def time_created_readable(path: Path | str) -> str:
     time_created = time.strptime(time.ctime(time_created(path)))

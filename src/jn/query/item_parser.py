@@ -1,6 +1,7 @@
-'''
+"""
 Still just scratch at this point.
-'''
+"""
+
 import re
 from typing import Any, Callable
 
@@ -9,7 +10,7 @@ def parse_id(subquery: str) -> Callable[[dict[str, Any]], bool]:
     assert re.match("=[A-Za-z,]+|=\[[A-Za-z]\]+", subquery)
 
     if subquery.startswith("=["):
-        rgx = re.compile(subquery[2: -1])
+        rgx = re.compile(subquery[2:-1])
         return lambda d: re.search(rgx, d["id"])
     # elif subquery.startswith("="):
     else:
@@ -52,7 +53,7 @@ def parse_status(subquery: str) -> Callable[[dict[str, Any]], bool]:
 
 def parse_due_date(subquery: str) -> Callable[[dict[str, Any]], bool]:
     assert re.match("^\^~?{1,2}\d{4}-\d\d-\d\d", subquery)
-    
+
     if subquery.startswith("^^"):
         _test = ...
     else:
@@ -64,7 +65,7 @@ def parse_rating(subquery: str) -> Callable[[dict[str, Any]], bool]:
     m = re.match("^\*+~?$", subquery)
     assert m
     sq = m.group(0)
-    
+
     if subquery.endswith("?~") or subquery.endswith("?~"):
         return lambda d: d["rating"] in sq
     elif subquery.endswith("opt"):
@@ -79,7 +80,7 @@ def parse_date(subquery: str) -> Callable[[dict[str, Any]], bool]:
     m = re.match("^\^{1,2}~?(\d{4}-\d\d-\d\d)$", subquery)
     assert bool(m)
     date = m.group(1)
-    
+
     if subquery.startswith("^^~"):
         return lambda d: d[""]
     elif subquery.startswith("^^"):
@@ -135,7 +136,6 @@ order = {
 
 
 def make_item_parser(config: ...) -> Callable[[str], Callable[[dict], bool]]:
-    def parse_item(item: str) -> Callable[[dict], bool]:
-        ...
-    
+    def parse_item(item: str) -> Callable[[dict], bool]: ...
+
     return parse_item

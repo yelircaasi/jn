@@ -23,18 +23,18 @@ sample = [
 
 def dep_sort(task_list: list[dict]) -> list[dict]:
     """
-    Sort list of dictionaries such that 
-      1) dependency constraints are satisfied and 
+    Sort list of dictionaries such that
+      1) dependency constraints are satisfied and
       2) priority ordering is satisfied subject to (1)
     """
     # sort on priority to preserve priority order in the output
     task_list.sort(key=lambda t: t["priority"], reverse=True)
     task_ids = [t["id"] for t in task_list]
-    
+
     # important to make changes in reverse priority order so that insertion preserves priority order
     dep_dict = {t["id"]: t["prerequisites"] for t in reversed(task_list) if t["prerequisites"]}
     print(dep_dict)
-    
+
     def place_after(to_move: str, deps: list[str], id_list: list) -> bool:
         if not deps:
             return False
@@ -54,7 +54,7 @@ def dep_sort(task_list: list[dict]) -> list[dict]:
         for task_id, task_deps in dep_dict.items():
             changed = place_after(task_id, task_deps, task_ids)
             change_tracker.append(changed)
-        unchanged = (not any(change_tracker))
+        unchanged = not any(change_tracker)
         print(task_ids)
         if unchanged:
             return sorted(task_list, key=lambda t: task_ids.index(t["id"]))
@@ -67,9 +67,9 @@ def dep_sort(task_list: list[dict]) -> list[dict]:
         if changed:
             after = str(task_ids)
             print(after)
-        
+
     raise ValueError(f"Graph contains a cycle.")
-    
+
     # levels = {t: 0 for t in task_ids}
     # roots = list(filter(lambda t: t["depencies"] == [], task_list))
     # depended_on = {t: set() for t in task_ids}
@@ -84,5 +84,6 @@ def dep_sort(task_list: list[dict]) -> list[dict]:
     #         levels[t["id"]] = max([levels[d] for d in t["prerequisites"]]) + 1
     #     new_rep = json.dumps(levels)
     # return sorted(task_list, key=lambda t: levels[t["id"]])
+
 
 print(json.dumps(dep_sort(sample), indent=4))

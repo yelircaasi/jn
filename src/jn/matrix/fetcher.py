@@ -1,4 +1,4 @@
-'''
+"""
 ACCESS_TOKEN_PLACEHOLDER
 ALL
 AsyncClient
@@ -318,7 +318,8 @@ version
 web
 write_credentials_to_disk
 zn
-'''
+"""
+
 import subprocess
 
 # from matrix_commander import matrix_commander as mc
@@ -338,7 +339,7 @@ args = [
     "--listen",
     "tail",
     "--tail",
-    "15"
+    "15",
 ]
 
 
