@@ -50,119 +50,1040 @@ test_dict = {
 }
 
 
-def parse_and_output_all(query: str) -> tuple:
-    ...
+def parse_and_output_all(query: str) -> tuple: ...
 
 
-case_and_single           = "a.b"                               # ✔
-case_and                  = "ab.cd"                             # ✔
-case_or_single            = "a.b"                               # ✔
-case_or                   = "ab.cd"                             # ✔
-case_precedence           = "tagName1.tagName2,tagName3"        # ✔
-case_simple_noval         = "+extraTag1"                        # ✔
-case_simple_extra         = "+extraTag1:extraTagValue"          # ✔
-case_simple_status        = "/statusName1"                      # ✔
-case_simple_rating        = "*3.3"                              # ✔
-case_simple_tag           = "tagName"                           # ✔
-case_simple_tag_subtag    = "tagName1:subtagName1"              # ✔
-case_simple_embeddedregex = "〈[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?〉"   # ✔ 
-case_simple_textregex     = "⸨[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?⸩"  # ✔ 
-case_simple_fullregex     = "⦃[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?⦄"  # ✔ 
-case_simple_linkregex     = "«[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?»"  # ✔ 
-case_simple_type_subtype  = "%typeName:subtypeName"             # ✔
-case_simple_type          = "%typeName"                         # ✔
-case_simple_date_created  = "©2022-03-15"                       # ✔
-case_simple_date_modified = "^2024-06-17"                       # ✔
-case_simple_proglang      = "❱haskell"                          # ✔
-case_simple_language      = "€EN"                               # ✔
+{
+    "case_and_single": {
+        "name": "case_and_single",
+        "queries": ["a.b"],
+        "status": "✔",
+        "tokens": [("IDENTIFIER", "a"), ("AND", "."), ("IDENTIFIER", "b")],
+        "ast": ("AND", ("TAG", ("STRING", "a")), ("TAG", ("STRING", "b"))),
+        "raw_tree": {"AND": [{"TAG": {"STRING": "a"}}, {"TAG": {"STRING": "b"}}]},
+        "tree": {"AND": [{"TAG": {"STRING": "a"}}, {"TAG": {"STRING": "b"}}]},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_and": {
+        "name": "case_and",
+        "queries": ["ab.cd"],
+        "status": "✔",
+        "tokens": [("IDENTIFIER", "ab"), ("AND", "."), ("IDENTIFIER", "cd")],
+        "ast": ("AND", ("TAG", ("STRING", "ab")), ("TAG", ("STRING", "cd"))),
+        "raw_tree": {"AND": [{"TAG": {"STRING": "ab"}}, {"TAG": {"STRING": "cd"}}]},
+        "tree": {"AND": [{"TAG": {"STRING": "ab"}}, {"TAG": {"STRING": "cd"}}]},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_or_single": {
+        "name": "case_or_single",
+        "queries": ["a,b"],
+        "status": "✔",
+        "tokens": [("IDENTIFIER", "a"), ("OR", ","), ("IDENTIFIER", "b")],
+        "ast": ("OR", ("TAG", ("STRING", "a")), ("TAG", ("STRING", "b"))),
+        "raw_tree": {"OR": [{"TAG": {"STRING": "a"}}, {"TAG": {"STRING": "b"}}]},
+        "tree": {"OR": [{"TAG": {"STRING": "a"}}, {"TAG": {"STRING": "b"}}]},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_or": {
+        "name": "case_or",
+        "queries": ["ab,cd"],
+        "status": "✔",
+        "tokens": [("IDENTIFIER", "ab"), ("OR", ","), ("IDENTIFIER", "cd")],
+        "ast": ("OR", ("TAG", ("STRING", "ab")), ("TAG", ("STRING", "cd"))),
+        "raw_tree": {"OR": [{"TAG": {"STRING": "ab"}}, {"TAG": {"STRING": "cd"}}]},
+        "tree": {"OR": [{"TAG": {"STRING": "ab"}}, {"TAG": {"STRING": "cd"}}]},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_precedence": {
+        "name": "case_precedence1",
+        "queries": ["tagName1.tagName2,tagName3"],
+        "status": "✔",
+        "tokens": [
+            ("IDENTIFIER", "tagName1"),
+            ("AND", "."),
+            ("IDENTIFIER", "tagName2"),
+            ("OR", ","),
+            ("IDENTIFIER", "tagName3"),
+        ],
+        "ast": (
+            "OR",
+            ("AND", ("TAG", ("STRING", "tagName1")), ("TAG", ("STRING", "tagName2"))),
+            ("TAG", ("STRING", "tagName3")),
+        ),
+        "raw_tree": {
+            "OR": [
+                {"AND": [{"TAG": {"STRING": "tagName1"}}, {"TAG": {"STRING": "tagName2"}}]},
+                {"TAG": {"STRING": "tagName3"}},
+            ]
+        },
+        "tree": {
+            "OR": [
+                {"AND": [{"TAG": {"STRING": "tagName1"}}, {"TAG": {"STRING": "tagName2"}}]},
+                {"TAG": {"STRING": "tagName3"}},
+            ]
+        },
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_precedence": {
+        "name": "case_precedence2",
+        "queries": ["tagName1,tagName2.tagName3"],
+        "status": "✔",
+        "tokens": [
+            ("IDENTIFIER", "tagName1"),
+            ("OR", ","),
+            ("IDENTIFIER", "tagName2"),
+            ("AND", "."),
+            ("IDENTIFIER", "tagName3"),
+        ],
+        "ast": (
+            "OR",
+            ("TAG", ("STRING", "tagName1")),
+            ("AND", ("TAG", ("STRING", "tagName2")), ("TAG", ("STRING", "tagName3"))),
+        ),
+        "raw_tree": {
+            "OR": [
+                {"TAG": {"STRING": "tagName1"}},
+                {"AND": [{"TAG": {"STRING": "tagName2"}}, {"TAG": {"STRING": "tagName3"}}]},
+            ]
+        },
+        "tree": {
+            "OR": [
+                {"TAG": {"STRING": "tagName1"}},
+                {"AND": [{"TAG": {"STRING": "tagName2"}}, {"TAG": {"STRING": "tagName3"}}]},
+            ]
+        },
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_noval": {
+        "name": "case_simple_noval",
+        "queries": ["+extraTag1"],
+        "status": "✔",
+        "tokens": [('PREFIX_EXTRA', '+'), ('IDENTIFIER', 'extraTag1')],
+        "ast": ('EXTRA', ('NAME', ('STRING', 'extraTag1'))),
+        "raw_tree": {
+    "EXTRA": {
+        "NAME": {
+            "STRING": "extraTag1"
+        }
+    }
+},
+        "tree": {
+    "EXTRA": {
+        "NAME": {
+            "STRING": "extraTag1"
+        }
+    }
+},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_extra": {
+        "name": "case_simple_extra",
+        "queries": ["+extraTag1:extraTagValue"],
+        "status": "✔",
+        "tokens": [('PREFIX_EXTRA', '+'), ('IDENTIFIER', 'extraTag1'), ('BIND', ':'), ('IDENTIFIER', 'extraTagValue')],
+        "ast": ('EXTRA', ('NAME', ('STRING', 'extraTag1')), ('VALUE', ('STRING', 'extraTagValue'))),
+        "raw_tree": {
+    "EXTRA": {
+        "NAME": {
+            "STRING": "extraTag1"
+        },
+        "VALUE": {
+            "STRING": "extraTagValue"
+        }
+    }
+},
+        "tree": {
+    "EXTRA": {
+        "NAME": {
+            "STRING": "extraTag1"
+        },
+        "VALUE": {
+            "STRING": "extraTagValue"
+        }
+    }
+},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_status": {
+        "name": "case_simple_status",
+        "queries": ["/statusName1"],
+        "status": "✔",
+        "tokens": [('PREFIX_STATUS', '/'), ('IDENTIFIER', 'statusName1')],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_rating": {
+        "name": "case_simple_rating",
+        "queries": ["*3.3"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_tag": {
+        "name": "case_simple_tag",
+        "queries": ["tagName"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_tag_subtag": {
+        "name": "case_simple_tag_subtag",
+        "queries": ["tagName1:subtagName1"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_embeddedregex": {
+        "name": "case_simple_embeddedregex",
+        "queries": ["〈[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?〉"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_textregex": {
+        "name": "case_simple_textregex",
+        "queries": ["⸨[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?⸩"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_fullregex": {
+        "name": "case_simple_fullregex",
+        "queries": ["⦃[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?⦄"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_linkregex": {
+        "name": "case_simple_linkregex",
+        "queries": ["«[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?»"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_type_subtype": {
+        "name": "case_simple_type_subtype",
+        "queries": ["%typeName:subtypeName"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_type": {
+        "name": "case_simple_type",
+        "queries": ["%typeName"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_date_created": {
+        "name": "case_simple_date_created",
+        "queries": ["©2022-03-15"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_date_modified": {
+        "name": "case_simple_date_modified",
+        "queries": ["^2024-06-17"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_proglang": {
+        "name": "case_simple_proglang",
+        "queries": ["❱haskell"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_language": {
+        "name": "case_simple_language",
+        "queries": ["€EN"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_and_single_neg": {
+        "name": "case_and_single_neg",
+        "queries": ["~a.~b"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_and_neg": {
+        "name": "case_and_neg",
+        "queries": ["~ab.~cd"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_or_single_neg": {
+        "name": "case_or_single_neg",
+        "queries": ["~a.~b"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_or_neg": {
+        "name": "case_or_neg",
+        "queries": ["~ab.~cd"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_precedence_neg": {
+        "name": "case_precedence_neg",
+        "queries": ["~tag1.~tag2,~tag3"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_extra_neg": {
+        "name": "case_simple_extra_neg",
+        "queries": ["+~extraTag1"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_status_neg": {
+        "name": "case_simple_status_neg",
+        "queries": ["/~status1"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_rating_neg": {
+        "name": "case_simple_rating_neg",
+        "queries": ["*~4"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_tag_neg": {
+        "name": "case_simple_tag_neg",
+        "queries": ["~tagName1"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_tag_subtag_neg": {
+        "name": "case_simple_tag_subtag_neg",
+        "queries": ["tagName1:~subtagName"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_embeddedregex_neg": {
+        "name": "case_simple_embeddedregex_neg",
+        "queries": ["~〈someRegex〉"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_textregex_neg": {
+        "name": "case_simple_textregex_neg",
+        "queries": ["~⸨someRegex⸩"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_fullregex_neg": {
+        "name": "case_simple_fullregex_neg",
+        "queries": ["~⟪someRegex⟫"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_type_subtype_neg": {
+        "name": "case_simple_type_subtype_neg",
+        "queries": ["%typeName:~subtypeName"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_type_neg": {
+        "name": "case_simple_type_neg",
+        "queries": ["%~typeName"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_date_created_neg": {
+        "name": "case_simple_date_created_neg",
+        "queries": ["©~2022-03-15"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_date_modified_neg": {
+        "name": "case_simple_date_modified_neg",
+        "queries": ["^~2024-06-17"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_proglang_neg": {
+        "name": "case_simple_proglang_neg",
+        "queries": ["❱~haskell"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_language_neg": {
+        "name": "case_simple_language_neg",
+        "queries": ["€~EN"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_rating_exact": {
+        "name": "case_simple_rating_exact",
+        "queries": ["*~~4.0"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_date_created_exact": {
+        "name": "case_simple_date_created_exact",
+        "queries": ["©~~2019-04-06"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_date_modified_exact": {
+        "name": "case_simple_date_modified_exact",
+        "queries": ["^~~2021-07-10"],
+        "status": "✔",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_and_single_opt": {
+        "name": "case_and_single_opt",
+        "queries": ["?a.?b"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_and_opt": {
+        "name": "case_and_opt",
+        "queries": ["?ab.?cd"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_or_single_opt": {
+        "name": "case_or_single_opt",
+        "queries": ["?a,?b"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_or_opt": {
+        "name": "case_or_opt",
+        "queries": ["?ab.?cd"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_or_opt": {
+        "name": "case_or_opt",
+        "queries": ["?ab.?cd"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_precedence_opt": {
+        "name": "case_precedence_opt",
+        "queries": ["?tag1.?tag2,?tag3"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_extra_opt": {
+        "name": "case_simple_extra_opt",
+        "queries": ["+?extraTagName:extraTagValue"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_status_opt": {
+        "name": "case_simple_status_opt",
+        "queries": ["/?status"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_rating_opt": {
+        "name": "case_simple_rating_opt",
+        "queries": ["*?4.1"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_tag_opt": {
+        "name": "case_simple_tag_opt",
+        "queries": ["?tagString"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_tag_subtag_opt": {
+        "name": "case_simple_tag_subtag_opt",
+        "queries": ["tagString:?subtagString"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_embeddedregex_opt": {
+        "name": "case_simple_embeddedregex_opt",
+        "queries": ["?〈someRegex〉"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_textregex_opt": {
+        "name": "case_simple_textregex_opt",
+        "queries": ["?⸨someRegex⸩"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_fullregex_opt": {
+        "name": "case_simple_fullregex_opt",
+        "queries": ["?⟪someRegex⟫"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_type_subtype_opt": {
+        "name": "case_simple_type_subtype_opt",
+        "queries": ["typeName:?subtypeName"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_type_opt": {
+        "name": "case_simple_type_opt",
+        "queries": ["%?typeName"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    # case_simple_date_created_opt = "©?"
+    # case_simple_date_modified_opt = ""
+    "case_simple_proglang_opt": {
+        "name": "case_simple_proglang_opt",
+        "queries": ["❱?python"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_language_opt": {
+        "name": "case_simple_language_opt",
+        "queries": ["€?EN"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_and_single_neg_opt": {
+        "name": "case_and_single_neg_opt",
+        "queries": ["?~a.?~b"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_and_neg_opt": {
+        "name": "case_and_neg_opt",
+        "queries": ["?~ab.cd"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_or_single_neg_opt": {
+        "name": "case_or_single_neg_opt",
+        "queries": ["?~a.?~b"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_or_neg_opt": {
+        "name": "case_or_neg_opt",
+        "queries": ["?~ab.cd"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_precedence_neg_opt": {
+        "name": "case_precedence_neg_opt",
+        "queries": ["?~tag1,?~tag2.tag3"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_extra_neg_opt": {
+        "name": "case_simple_extra_neg_opt",
+        "queries": ["?~extraName:extraValue"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_status_neg_opt": {
+        "name": "case_simple_status_neg_opt",
+        "queries": ["/?~statusName"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_rating_neg_opt": {
+        "name": "case_simple_rating_neg_opt",
+        "queries": ["*?~3.0"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_tag_neg_opt": {
+        "name": "case_simple_tag_neg_opt",
+        "queries": ["?~tagName"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_tag_subtag_neg_opt": {
+        "name": "case_simple_tag_subtag_neg_opt",
+        "queries": ["tagName:?~subtagName"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_embeddedregex_neg_opt": {
+        "name": "case_simple_embeddedregex_neg_opt",
+        "queries": ["?~〈someRegex〉"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_textregex_neg_opt": {
+        "name": "case_simple_textregex_neg_opt",
+        "queries": ["?~⸨someRegex⸩"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_fullregex_neg_opt": {
+        "name": "case_simple_fullregex_neg_opt",
+        "queries": ["?~⟪someRegex⟫"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_type_subtype_neg_opt": {
+        "name": "case_simple_type_subtype_neg_opt",
+        "queries": ["%typeName:?~subtypeName"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_type_neg_opt": {
+        "name": "case_simple_type_neg_opt",
+        "queries": ["%?~typeName"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_date_created_neg_opt": {
+        "name": "case_simple_date_created_neg_opt",
+        "queries": ["©?~2025-12-31"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_date_modified_neg_opt": {
+        "name": "case_simple_date_modified_neg_opt",
+        "queries": ["^?~2030-04-05"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_proglang_neg_opt": {
+        "name": "case_simple_proglang_neg_opt",
+        "queries": ["❱?~python"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_language_neg_opt": {
+        "name": "case_simple_language_neg_opt",
+        "queries": ["€?~EN"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    # need to tokenize this as EXACT_NOT
+    "case_simple_rating_neg_exact": {
+        "name": "case_simple_rating_neg_exact",
+        "queries": ["*~~~3.0"],
+        "status": "x",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_date_created_neg_exact": {
+        "name": "case_simple_date_created_neg_exact",
+        "queries": ["©~~~2023-05-31"],
+        "status": "x",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_date_modified_neg_exact": {
+        "name": "case_simple_date_modified_neg_exact",
+        "queries": ["^~~~2024-11-21"],
+        "status": "x",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_rating_neg_exact_opt": {
+        "name": "case_simple_rating_neg_exact_opt",
+        "queries": ["?~~~4.5"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_date_created_neg_exact_opt": {
+        "name": "case_simple_date_created_neg_exact_opt",
+        "queries": ["©?~~~2022-10-13"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+    "case_simple_date_modified_neg_exact_opt": {
+        "name": "case_simple_date_modified_neg_exact_opt",
+        "queries": ["?~~~2020-05-18"],
+        "status": " ",
+        "tokens": [],
+        "ast": {},
+        "raw_tree": {},
+        "tree": {},
+        "equivalent": "",
+        "match_ids": [],
+    },
+}
 
-case_and_single_neg           = "~a.~b"
-case_and_neg                  = "~ab.~cd"
-case_or_single_neg            = "~a.~b"
-case_or_neg                   = "~ab.~cd"
-case_precedence_neg           = "~tag1.~tag2,~tag3"
-case_simple_extra_neg         = "+~extraTag1"
-case_simple_status_neg        = "/~status1"
-case_simple_rating_neg        = "*~4"
-case_simple_tag_neg           = "~tagName1"
-case_simple_tag_subtag_neg    = "tagName1:~subtagName"
-case_simple_embeddedregex_neg = "~〈someRegex〉"
-case_simple_textregex_neg     = "~⸨someRegex⸩"
-case_simple_fullregex_neg     = "~⟪someRegex⟫"
-case_simple_type_subtype_neg  = "%typeName:~subtypeName"
-case_simple_type_neg          = "%~typeName"
-case_simple_date_created_neg  = "©~2022-03-15"
-case_simple_date_modified_neg = "^~2024-06-17"
-case_simple_proglang_neg      = "❱~haskell"
-case_simple_language_neg      = "€~EN"
-
-case_simple_rating_exact        = "*~~4.0"         # ✔
-case_simple_date_created_exact  = "©~~2019-04-06"  # ✔
-case_simple_date_modified_exact = "^~~2021-07-10"  # ✔
-
-case_and_single_opt           = "a?.b?"
-case_and_opt                  = "ab?.cd?"
-case_or_single_opt            = "?a,?b"
-case_or_opt                   = "ab?.cd?"
-case_or_opt                   = "ab?.cd?"
-case_precedence_opt           = "tag1?.tag2?,tag3?"
-case_simple_extra_opt         = "+?extraTagName:extraTagValue"
-case_simple_status_opt        = "/?status"
-case_simple_rating_opt        = "*?4.1"
-case_simple_tag_opt           = "?tagString"
-case_simple_tag_subtag_opt    = "tagString:?subtagString"
-case_simple_embeddedregex_opt = "?〈someRegex〉"
-case_simple_textregex_opt     = "?⸨someRegex⸩"
-case_simple_fullregex_opt     = "?⟪someRegex⟫"
-case_simple_type_subtype_opt  = "typeName:?subtypeName"
-case_simple_type_opt          = "%?typeName"
-# case_simple_date_created_opt = "©?"
-# case_simple_date_modified_opt = ""
-case_simple_proglang_opt = "❱?python"
-case_simple_language_opt = "€?EN"
-
-case_and_single_neg_opt           = "?~a.?~b"
-case_and_neg_opt                  = "?~ab.cd"
-case_or_single_neg_opt            = "?~a.?~b"
-case_or_neg_opt                   = "?~ab.cd"
-case_precedence_neg_opt           = "tag1.?~,tag3"
-case_simple_extra_neg_opt         = "?~extraName:extraValue"
-case_simple_status_neg_opt        = "/?~statusName"
-case_simple_rating_neg_opt        = "*?~3.0"
-case_simple_tag_neg_opt           = "?~tagName"
-case_simple_tag_subtag_neg_opt    = "tagName:?~subtagName"
-case_simple_embeddedregex_neg_opt = "?~〈someRegex〉"
-case_simple_textregex_neg_opt     = "?~⸨someRegex⸩"
-case_simple_fullregex_neg_opt     = "?~⟪someRegex⟫"
-case_simple_type_subtype_neg_opt  = "%typeName:?~subtypeName"
-case_simple_type_neg_opt          = "%?~typeName"
-case_simple_date_created_neg_opt  = "©?~2025-12-31"
-case_simple_date_modified_neg_opt = "^?~2030-04-05"
-case_simple_proglang_neg_opt      = "❱?~python"
-case_simple_language_neg_opt      = "€?~EN"
-
-# need to tokenize this as EXACT_NOT
-case_simple_rating_neg_exact        = "*~~~3.0"         # can easily do wthout this
-case_simple_date_created_neg_exact  = "©~~~2023-05-31"  # really necessary?
-case_simple_date_modified_neg_exact = "^~~~2024-11-21"  # really necessary?
-
-case_simple_rating_neg_exact_opt        = "?~~~4.5"
-case_simple_date_created_neg_exact_opt  = "©?~~~2022-10-13"
-case_simple_date_modified_neg_exact_opt = "?~~~2020-05-18"
-
-
-regex_special = [
-    "[",
-    "]",
-    "{",
-    "}",
-    "-",
-    "\\",
-    "(",
-    ")",
-    "*",
-    "^",
-    "$",
-    "=",
-    ""
-]
+regex_special = ["[", "]", "{", "}", "-", "\\", "(", ")", "*", "^", "$", "=", ""]

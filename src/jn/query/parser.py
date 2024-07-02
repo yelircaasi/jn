@@ -18,9 +18,10 @@ def parse_expression(tokens):
             return None
 
         token = tokens.pop(0)
+        if (toktype := token[0]) in {"AND", "NOT", "OR"}:
+            return (toktype, parse_primary(tokens))
 
         if (toktype := token[0]) in IDENT_TYPES:
-            print(toktype, token[1])
             if toktype == "IDENTIFIER":
                 if tokens and tokens[0][0] == "BIND":
                     tokens.pop(0)
@@ -50,13 +51,13 @@ def parse_expression(tokens):
 
         if toktype in non_tag_dispatcher:
             # expr = parse_homogeneous(tokens, PREFIX_TO_TYPE[toktype])
-            expr = non_tag_dispatcher[toktype](tokens)
-            return ("EXPR", expr)
+            return non_tag_dispatcher[toktype](tokens)
+            # return ("EXPR", expr)
         if token[0] == "LBRACE":
             expr = parse_expression(tokens)
             if tokens and tokens[0][0] == "RBRACE":
                 tokens.pop(0)
-            return ("EXPR", expr)
+            return expr
 
         raise SyntaxError(f"Unexpected token: {token}")
 
@@ -93,25 +94,25 @@ def generate_dict_structure(ast):
                 k, v = t[0], t[1:]
                 if (len(v) == 1) and isinstance(v[0], tuple):
                     v = v[0]
-                print(k, v)
                 if k in {"SUBTYPE", "SUBTAG", "NOT", "OPT", "EXACT"}:
-                    print(k, v)
-                    print("*******")
                     d.update({k: generate_dict_structure(v)})
                 else:
-                    assert len(v) == 1, v
-                    d.update({k: v[0]})
+                    if len(v) == 1:
+                        d.update({k: v[0]})
+                    elif len(v) == 2:
+                        d.update({k: {v[0]: v[1]}})
+                    else: raise ValueError
             return d
         
-        print("++++++", ast)
         if ast[0] in {"NOT", "OPT", "EXACT"}:
-            print(".")
             return (ast[0], parse_item(ast[1:]))
         return {ast[0]: _dict(ast[1:])}
     
     
     if ast[0] in {"STRING", "REGEX"}:
         return {ast[0]: ast[1]}
+    if ast[0] in {"SUBTAG", "SUBTYPE"}:
+        return {ast[0]: dict(ast[1:])}
     elif ast[0] in {"OPT", "NOT", "EXACT"}:
         return {ast[0]: generate_dict_structure(ast[1])}
     if ast[0] == "TAG":

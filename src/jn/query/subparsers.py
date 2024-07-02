@@ -82,15 +82,24 @@ def parse_regex(tokens: list[tuple[str, str]]) -> tuple[tuple]:
 
 def parse_status(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     """ """
-    opt, neg, exact = itemgetter("OPT", "NEG", "EXACT")(parse_modifiers(tokens))
-
-    token = tokens.pop(0)
-    typ = token[0]
-    if typ == "IDENTIFIER":
-        return ("STATUS", ("STRING", token[1]))
-    if typ == "LBRACE":
+    if tokens[0][0] == "LBRACE":
+        tokens.pop(0)
         return parse_homogeneous(tokens, "STATUS")
-    raise ValueError
+    
+    opt, neg = itemgetter("OPT", "NEG")(parse_modifiers(tokens))
+
+    typ, status_string = tokens.pop(0)
+    if typ == "IDENTIFIER":
+        string_tuple = ("STRING", status_string)
+    elif typ == "REGEX_EMBEDDED":
+        string_tuple = ("REGEX", status_string)
+
+    return {
+        (True, True): ("OPT", ("NOT", string_tuple)),
+        (True, False): ("OPT", string_tuple),
+        (False, True): ("NOT", string_tuple),
+        (False, False): string_tuple
+    }[(opt, neg)]
 
 
 def parse_extra(tokens: list[tuple[str, str]]) -> tuple[tuple]:
@@ -99,14 +108,30 @@ def parse_extra(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     """
     opt, neg, exact = itemgetter("OPT", "NEG", "EXACT")(parse_modifiers(tokens))
     
-    toktype, name = tokens.pop(0)
-    assert toktype == "IDENTIFIER"
+    typ, extra_name = tokens.pop(0)
+    if typ == "IDENTIFIER":
+        name_tuple = ("NAME", ("STRING", extra_name))
+    elif typ == "REGEX_EMBEDDED":
+        name_tuple = ("NAME", ("REGEX", extra_name))
+    else:
+        raise ValueError
     if tokens and tokens[0][0] == "BIND":
-        toktype, bind = tokens.pop(0)
-        tokype, value = tokens.pop(0)
-        return ("EXTRA", ("NAME", name), ("STRING", value))
-    return ("EXTRA", ("NAME", name))
-    
+        tokens.pop(0)
+        typ, extra_value = tokens.pop(0)
+        if typ == "IDENTIFIER":
+            value_tuple = ("VALUE", ("STRING", extra_value))
+        elif typ == "REGEX_EMBEDDED":
+            value_tuple = ("VALUE", ("REGEX", extra_value))
+        extra_tuple = ("EXTRA", name_tuple, value_tuple)
+    else:
+        extra_tuple = ("EXTRA", name_tuple)
+
+    return {
+        (True, True): ("OPT", ("NOT", extra_tuple)),
+        (True, False): ("OPT", extra_tuple),
+        (False, True): ("NOT", extra_tuple),
+        (False, False): extra_tuple
+    }[(opt, neg)]    
 
 
 def parse_type(tokens: list[tuple[str, str]]) -> tuple[tuple]:
@@ -149,14 +174,20 @@ def parse_language(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     €{EN,DE,FR}
     """
     opt, neg, exact = itemgetter("OPT", "NEG", "EXACT")(parse_modifiers(tokens))
-    
-    token = tokens.pop(0)
-    typ = token[0]
-    if typ == "IDENTIFIER":
-        return ("LANGUAGE", ("STRING", token[1]))
+
+    typ, val = tokens.pop(0)
+    assert typ == "IDENTIFIER"
+    language_tuple = ("EXTRA", ("NAME", ("STRING", "language")), ("VALUE", ("STRING", val)))
+
+    return {
+        (True, True): ("OPT", ("NOT", language_tuple)),
+        (True, False): ("OPT", language_tuple),
+        (False, True): ("NOT", language_tuple),
+        (False, False): language_tuple
+    }[(opt, neg)]
+
     if typ == "LBRACE":
         return parse_homogeneous(tokens, "LANGUAGE")
-    raise ValueError
 
 
 def parse_proglang(tokens: list[tuple[str, str]]) -> tuple[tuple]:
@@ -165,14 +196,21 @@ def parse_proglang(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     _{python.{haskell,rust}}
     """
     opt, neg, exact = itemgetter("OPT", "NEG", "EXACT")(parse_modifiers(tokens))
-    
-    token = tokens.pop(0)
-    typ = token[0]
-    if typ == "IDENTIFIER":
-        return ("PROGLANG", ("STRING", token[1]))
+
+    typ, val = tokens.pop(0)
+    assert typ == "IDENTIFIER"
+    proglang_tuple = ("EXTRA",  ("NAME", ("STRING", "progLang")), ("VALUE", ("STRING", val)))
+
+    return {
+        (True, True): ("OPT", ("NOT", proglang_tuple)),
+        (True, False): ("OPT", proglang_tuple),
+        (False, True): ("NOT", proglang_tuple),
+        (False, False): proglang_tuple
+    }[(opt, neg)]
+
     if typ == "LBRACE":
         return parse_homogeneous(tokens, "PROGLANG")
-    raise ValueError
+    
 
 
 def parse_rating(tokens: list[tuple[str, str]]) -> tuple[tuple]:
@@ -180,6 +218,15 @@ def parse_rating(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     *A
     """
     opt, neg, exact = itemgetter("OPT", "NEG", "EXACT")(parse_modifiers(tokens))
+
+    #-----
+    _tuple = {
+        (True, True): ("OPT", ("NOT", ("", ))),
+        (True, False): ("OPT", ("STRING", )),
+        (False, True): ("NOT", ("STRING", )),
+        (False, False): ("STRING", )
+    }[(opt, neg)]
+    #-----
     
     token = tokens.pop(0)
     typ = token[0]
@@ -195,6 +242,15 @@ def parse_cached(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     @queryName
     """
     opt, neg, exact = itemgetter("OPT", "NEG", "EXACT")(parse_modifiers(tokens))
+
+    #-----
+    _tuple = {
+        (True, True): ("OPT", ("NOT", ("", ))),
+        (True, False): ("OPT", ("STRING", )),
+        (False, True): ("NOT", ("STRING", )),
+        (False, False): ("STRING", )
+    }[(opt, neg)]
+    #-----
     
     token = tokens.pop(0)
     return ("CACHED_QUERY", token[1])
@@ -207,15 +263,20 @@ def parse_date_created(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     ^~2023-12-13
     """
     opt, neg, exact = itemgetter("OPT", "NEG", "EXACT")(parse_modifiers(tokens))
-    
-    typ, val = tokens.pop(0)
-    if typ == "DATE":
-        return ("DATE_CREATED", ("DATE", val), ("INTERPRETATION", "OLDEST"))
-    if typ == "NOT":
-        token = token.pop(0)
-        return ("DATE_CREATED", ("DATE", val), ("INTERPRETATION", "NEWEST"))
-    if typ == "EXACTLY":
-        return ("DATE_CREATED", ("DATE", val), ("INTERPRETATION", "EXACT"))
+    assert not (neg and exact)
+    _, date = tokens.pop(0)
+    date_tuple =  ("DATE", date)
+
+    return {
+        (False, False, False): ("DATE_CREATED", date_tuple, ("INTERPRETATION", "NEWER_THAN")),
+        (False, False, True):  ("DATE_CREATED", date_tuple, ("INTERPRETATION", "EXACT")),
+        (False, True, False):  ("DATE_CREATED", date_tuple, ("INTERPRETATION", "OLDER_THAN")),
+        (False, True, True):   ("DATE_CREATED", date_tuple, ("INTERPRETATION", "EXCLUDE")),
+        (True, False, False):  ("DATE_CREATED", ("OPT", date_tuple, ("INTERPRETATION", "NEWER_THAN"))),
+        (True, False, True):   ("DATE_CREATED", ("OPT", date_tuple, ("INTERPRETATION", "EXACT"))),
+        (True, True, False):   ("DATE_CREATED", ("OPT", date_tuple, ("INTERPRETATION", "OLDER_THAN"))),
+        (True, True, True):    ("DATE_CREATED", ("OPT", date_tuple, ("INTERPRETATION", "EXCLUDE"))),
+    }[(opt, neg, exact)]
 
 
 def parse_date_modified(tokens: list[tuple[str, str]]) -> tuple[tuple]:
@@ -225,21 +286,34 @@ def parse_date_modified(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     ^~2023-12-13
     """
     opt, neg, exact = itemgetter("OPT", "NEG", "EXACT")(parse_modifiers(tokens))
-    
-    typ, val = tokens.pop(0)
-    if typ == "DATE":
-        return ("DATE_MODIFIED", ("DATE", val), ("INTERPRETATION", "OLDEST"))
-    if typ == "NOT":
-        _, val = tokens.pop(0)
-        return ("DATE_MODIFIED", ("DATE", val), ("INTERPRETATION", "NEWEST"))
-    if typ == "EXACTLY":
-        _, val = tokens.pop(0)
-        return ("DATE_MODIFIED", ("DATE", val), ("INTERPRETATION", "EXACT"))
+    assert not (neg and exact)
+    _, date = tokens.pop(0)
+    date_tuple =  ("DATE", date)
+
+    return {
+        (False, False, False): ("DATE_MODIFIED", date_tuple, ("INTERPRETATION", "NEWER_THAN")),
+        (False, False, True):  ("DATE_MODIFIED", date_tuple, ("INTERPRETATION", "EXACT")),
+        (False, True, False):  ("DATE_MODIFIED", date_tuple, ("INTERPRETATION", "OLDER_THAN")),
+        (False, True, True):   ("DATE_MODIFIED", date_tuple, ("INTERPRETATION", "EXCLUDE")),
+        (True, False, False):  ("DATE_MODIFIED", ("OPT", date_tuple, ("INTERPRETATION", "NEWER_THAN"))),
+        (True, False, True):   ("DATE_MODIFIED", ("OPT", date_tuple, ("INTERPRETATION", "EXACT"))),
+        (True, True, False):   ("DATE_MODIFIED", ("OPT", date_tuple, ("INTERPRETATION", "OLDER_THAN"))),
+        (True, True, True):    ("DATE_MODIFIED", ("OPT", date_tuple, ("INTERPRETATION", "EXCLUDE"))),
+    }[(opt, neg, exact)]
 
 
 def parse_id(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     """ """
     opt, neg, exact = itemgetter("OPT", "NEG", "EXACT")(parse_modifiers(tokens))
+
+    #-----
+    _tuple = {
+        (True, True): ("OPT", ("NOT", ("", ))),
+        (True, False): ("OPT", ("STRING", )),
+        (False, True): ("NOT", ("STRING", )),
+        (False, False): ("STRING", )
+    }[(opt, neg)]
+    #-----
     
     token = tokens.pop(0)
     typ = token[0]
@@ -253,6 +327,15 @@ def parse_id(tokens: list[tuple[str, str]]) -> tuple[tuple]:
 def parse_id(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     """ """
     opt, neg, exact = itemgetter("OPT", "NEG", "EXACT")(parse_modifiers(tokens))
+
+    #-----
+    _tuple = {
+        (True, True): ("OPT", ("NOT", ("", ))),
+        (True, False): ("OPT", ("STRING", )),
+        (False, True): ("NOT", ("STRING", )),
+        (False, False): ("STRING", )
+    }[(opt, neg)]
+    #-----
     
     token = tokens.pop(0)
     typ = token[0]
