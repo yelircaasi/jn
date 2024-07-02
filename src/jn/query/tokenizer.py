@@ -28,9 +28,9 @@ def make_tokenizer(tokenizer_config) -> Callable[[str], list[tuple[str, str]]]:
             ("LBRACE", f"[{leftsquare}{leftround}{leftcurved}]"),
             ("DATE", r"\d{4}-\d\d-\d\d"),
             ("NUMBER", r"(?<=[\*~\?])-?\d\.\d+|(?<=[\*~])-?\d(?=[^\.])|(?<=[\*~])-?\d(?=\.[^\d])"),
-            ("RBRACE", r"[\]❩❫]"),  # Right bracket
-            ("AND", r"\."),  # AND operator
-            ("OR", r","),  # OR operator
+            ("RBRACE", r"[\]❩❫]"),
+            ("AND", r"\."),
+            ("OR", r","),
             ("EXACTLY", r"~~"),
             ("NOT", r"[~󱈸]"),
             ("OPT", r"\?"),
@@ -49,7 +49,7 @@ def make_tokenizer(tokenizer_config) -> Callable[[str], list[tuple[str, str]]]:
             ("IDENTIFIER", r"[A-Za-z][A-Za-z0-9_-]*"),
             ("BIND", r":"),
             ("SKIP", r"[ \t]+"),
-            ("MISSTRING", r"."),
+            ("BAD", r"."),
         ]
         token_regex = re.compile("|".join(f"(?P<{pair[0]}>{pair[1]})" for pair in token_specification), re.UNICODE)
         tokens = []
@@ -58,7 +58,7 @@ def make_tokenizer(tokenizer_config) -> Callable[[str], list[tuple[str, str]]]:
             value = mo.group()
             if kind == "SKIP":
                 continue
-            elif kind == "MISSTRING":
+            elif kind == "BAD":
                 raise RuntimeError(f"Unexpected character: {value}")
             tokens.append((kind, value))
         return tokens

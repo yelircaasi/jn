@@ -105,8 +105,10 @@ def generate_dict_structure(ast):
             return d
         
         if ast[0] in {"NOT", "OPT", "EXACT"}:
-            return (ast[0], parse_item(ast[1:]))
-        return {ast[0]: _dict(ast[1:])}
+            # return (ast[0], parse_item(ast[1:]))
+            return (item[0], parse_item(item[1:]))
+        return {item[0]: _dict(item[1:])}
+        # return {ast[0]: _dict(ast[1:])}
     
     
     if ast[0] in {"STRING", "REGEX"}:
