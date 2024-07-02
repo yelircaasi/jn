@@ -13,18 +13,16 @@ def make_tokenizer(tokenizer_config) -> Callable[[str], list[tuple[str, str]]]:
         leftcurved = "❪"
 
         token_specification = [
-            ("REGEX_FULL_OPEN",  r"⦃|\[\["),
-            ("REGEX_FULL_CLOSE", r"⦄|\]\]"),
-            ("REGEX_EMBEDDED_OPEN", r"〈"),
-            ("REGEX_EMBEDDED_CLOSE", r"〉"),
-            ("REGEX_TEXT_OPEN", r"⸨"),
-            ("REGEX_TEXT_CLOSE", r"⸩"),
-            ("REGEX_LINK_OPEN", r"«"),
-            ("REGEX_LINK_CLOSE", r"»"),
-            ("REGEX_FULL", r"(?<=⦃).+?(?=⦄)|(?<=\[\[).+?(?=\]\])"),
-            ("REGEX_EMBEDDED", r"(?<=〈)[^〉]+"),
-            ("REGEX_TEXT", r"(?<=⸨)[^⸩]+"),
-            ("REGEX_LINK", r"(?<=«)[^»]+"),
+            ("REGEX_CLOSE", r'\]_\]|[⦄〉⸩»]'),
+            ("REGEX_FULL_OPEN",  r"⦃|FULL_\["),
+            ("REGEX_TEXT_OPEN", r"⸨|TEXT_\["),
+            ("REGEX_LINK_OPEN", r"«|LINK_\["),
+            ("REGEX_EMBEDDED_OPEN", r"〈|\[_\["),
+            ("REGEX_FULL", r"(?<=FULL_\[).+?(?=\]_\])|(?<=⦃)[^⦄]+(?=⦄)"),
+            ("REGEX_TEXT", r"(?<=TEXT_\[).+?(?=\]_\])|(?<=⸨)[^⸩]+(?=⸩)"),
+            ("REGEX_LINK", r"(?<=LINK_\[).+?(?=\]_\])|(?<=«)[^»]+(?=»)"),
+            ("REGEX_EMBEDDED", r"(?<=_\[).+?(?=\]_\])|(?<=〈)[^〉]+(?=〉)"),
+
             ("LBRACE", f"[{leftsquare}{leftround}{leftcurved}]"),
             ("DATE", r"\d{4}-\d\d-\d\d"),
             ("NUMBER", r"(?<=[\*~\?])-?\d\.\d+|(?<=[\*~])-?\d(?=[^\.])|(?<=[\*~])-?\d(?=\.[^\d])"),

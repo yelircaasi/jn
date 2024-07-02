@@ -11,6 +11,12 @@ from .subparsers import non_tag_dispatcher
 def parse_expression(tokens):
 
     def parse_primary(tokens):
+        REGEX_DICT = {
+            "REGEX_FULL_OPEN": "REGEX_FULL", 
+            "REGEX_TEXT_OPEN": "REGEX_TEXT", 
+            "REGEX_LINK_OPEN": "REGEX_LINK", 
+            "REGEX_EMBEDDED_OPEN": "TAG",
+        }
         def parse_modifiers(tokens):
             ...
 
@@ -32,27 +38,14 @@ def parse_expression(tokens):
                         ("SUBTAG", ("STRING", subtag)),
                     )  # queries of the type tag:{subtag1.subtag2} currenty note supported; instead tag:subtag1.tag:subtag2
                 return ("TAG", ("STRING", token[1]))
-            if toktype == "REGEX_FULL_OPEN":
+            if toktype in REGEX_DICT:
                 _, rgx = tokens.pop(0)
                 tokens.pop(0)
-                return ("REGEX_FULL", ("REGEX", rgx))
-            if toktype == "REGEX_TEXT_OPEN":
-                _, rgx = tokens.pop(0)
-                tokens.pop(0)
-                return ("REGEX_TEXT", ("REGEX", rgx))
-            if toktype == "REGEX_LINK_OPEN":
-                _, rgx = tokens.pop(0)
-                tokens.pop(0)
-                return ("REGEX_LINK", ("REGEX", rgx))
-            if toktype == "REGEX_EMBEDDED_OPEN":
-                _, rgx = tokens.pop(0)
-                tokens.pop(0)
-                return ("TAG", ("REGEX", rgx))
+                toktype = REGEX_DICT[toktype]
+                return (toktype, ("REGEX", rgx))
 
         if toktype in non_tag_dispatcher:
-            # expr = parse_homogeneous(tokens, PREFIX_TO_TYPE[toktype])
             return non_tag_dispatcher[toktype](tokens)
-            # return ("EXPR", expr)
         if token[0] == "LBRACE":
             expr = parse_expression(tokens)
             if tokens and tokens[0][0] == "RBRACE":
