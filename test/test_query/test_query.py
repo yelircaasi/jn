@@ -56,9 +56,9 @@ def parse_and_output_all(query: str) -> tuple: ...
 {
     "case_and_single": {
         "name": "case_and_single",
-        "queries": ["a.b"],
+        "queries": ("a.b"),
         "status": "✔",
-        "tokens": [("IDENTIFIER", "a"), ("AND", "."), ("IDENTIFIER", "b")],
+        "tokens": ([("IDENTIFIER", "a"), ("AND", "."), ("IDENTIFIER", "b")],),
         "ast": ("AND", ("TAG", ("STRING", "a")), ("TAG", ("STRING", "b"))),
         "raw_tree": {"AND": [{"TAG": {"STRING": "a"}}, {"TAG": {"STRING": "b"}}]},
         "tree": {"AND": [{"TAG": {"STRING": "a"}}, {"TAG": {"STRING": "b"}}]},
@@ -67,9 +67,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_and": {
         "name": "case_and",
-        "queries": ["ab.cd"],
+        "queries": ("ab.cd"),
         "status": "✔",
-        "tokens": [("IDENTIFIER", "ab"), ("AND", "."), ("IDENTIFIER", "cd")],
+        "tokens": ([("IDENTIFIER", "ab"), ("AND", "."), ("IDENTIFIER", "cd")],),
         "ast": ("AND", ("TAG", ("STRING", "ab")), ("TAG", ("STRING", "cd"))),
         "raw_tree": {"AND": [{"TAG": {"STRING": "ab"}}, {"TAG": {"STRING": "cd"}}]},
         "tree": {"AND": [{"TAG": {"STRING": "ab"}}, {"TAG": {"STRING": "cd"}}]},
@@ -78,9 +78,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_or_single": {
         "name": "case_or_single",
-        "queries": ["a,b"],
+        "queries": ("a,b"),
         "status": "✔",
-        "tokens": [("IDENTIFIER", "a"), ("OR", ","), ("IDENTIFIER", "b")],
+        "tokens": ([("IDENTIFIER", "a"), ("OR", ","), ("IDENTIFIER", "b")],),
         "ast": ("OR", ("TAG", ("STRING", "a")), ("TAG", ("STRING", "b"))),
         "raw_tree": {"OR": [{"TAG": {"STRING": "a"}}, {"TAG": {"STRING": "b"}}]},
         "tree": {"OR": [{"TAG": {"STRING": "a"}}, {"TAG": {"STRING": "b"}}]},
@@ -89,9 +89,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_or": {
         "name": "case_or",
-        "queries": ["ab,cd"],
+        "queries": ("ab,cd"),
         "status": "✔",
-        "tokens": [("IDENTIFIER", "ab"), ("OR", ","), ("IDENTIFIER", "cd")],
+        "tokens": ([("IDENTIFIER", "ab"), ("OR", ","), ("IDENTIFIER", "cd")],),
         "ast": ("OR", ("TAG", ("STRING", "ab")), ("TAG", ("STRING", "cd"))),
         "raw_tree": {"OR": [{"TAG": {"STRING": "ab"}}, {"TAG": {"STRING": "cd"}}]},
         "tree": {"OR": [{"TAG": {"STRING": "ab"}}, {"TAG": {"STRING": "cd"}}]},
@@ -100,15 +100,15 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_precedence": {
         "name": "case_precedence1",
-        "queries": ["tagName1.tagName2,tagName3"],
+        "queries": ("tagName1.tagName2,tagName3"),
         "status": "✔",
-        "tokens": [
+        "tokens": ([
             ("IDENTIFIER", "tagName1"),
             ("AND", "."),
             ("IDENTIFIER", "tagName2"),
             ("OR", ","),
             ("IDENTIFIER", "tagName3"),
-        ],
+        ],),
         "ast": (
             "OR",
             ("AND", ("TAG", ("STRING", "tagName1")), ("TAG", ("STRING", "tagName2"))),
@@ -131,15 +131,15 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_precedence": {
         "name": "case_precedence2",
-        "queries": ["tagName1,tagName2.tagName3"],
+        "queries": ("tagName1,tagName2.tagName3"),
         "status": "✔",
-        "tokens": [
+        "tokens": ([
             ("IDENTIFIER", "tagName1"),
             ("OR", ","),
             ("IDENTIFIER", "tagName2"),
             ("AND", "."),
             ("IDENTIFIER", "tagName3"),
-        ],
+        ],),
         "ast": (
             "OR",
             ("TAG", ("STRING", "tagName1")),
@@ -162,127 +162,127 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_noval": {
         "name": "case_simple_noval",
-        "queries": ["+extraTag1"],
+        "queries": ("+extraTag1"),
         "status": "✔",
-        "tokens": [('PREFIX_EXTRA', '+'), ('IDENTIFIER', 'extraTag1')],
-        "ast": ('EXTRA', ('NAME', ('STRING', 'extraTag1'))),
-        "raw_tree": {
-    "EXTRA": {
-        "NAME": {
-            "STRING": "extraTag1"
-        }
-    }
-},
-        "tree": {
-    "EXTRA": {
-        "NAME": {
-            "STRING": "extraTag1"
-        }
-    }
-},
+        "tokens": ([("PREFIX_EXTRA", "+"), ("IDENTIFIER", "extraTag1")],),
+        "ast": ("EXTRA", ("NAME", ("STRING", "extraTag1"))),
+        "raw_tree": {"EXTRA": {"NAME": {"STRING": "extraTag1"}}},
+        "tree": {"EXTRA": {"NAME": {"STRING": "extraTag1"}}},
         "equivalent": "",
         "match_ids": [],
     },
     "case_simple_extra": {
         "name": "case_simple_extra",
-        "queries": ["+extraTag1:extraTagValue"],
+        "queries": ("+extraTag1:extraTagValue"),
         "status": "✔",
-        "tokens": [('PREFIX_EXTRA', '+'), ('IDENTIFIER', 'extraTag1'), ('BIND', ':'), ('IDENTIFIER', 'extraTagValue')],
-        "ast": ('EXTRA', ('NAME', ('STRING', 'extraTag1')), ('VALUE', ('STRING', 'extraTagValue'))),
-        "raw_tree": {
-    "EXTRA": {
-        "NAME": {
-            "STRING": "extraTag1"
-        },
-        "VALUE": {
-            "STRING": "extraTagValue"
-        }
-    }
-},
-        "tree": {
-    "EXTRA": {
-        "NAME": {
-            "STRING": "extraTag1"
-        },
-        "VALUE": {
-            "STRING": "extraTagValue"
-        }
-    }
-},
+        "tokens": ([("PREFIX_EXTRA", "+"), ("IDENTIFIER", "extraTag1"), ("BIND", ":"), ("IDENTIFIER", "extraTagValue")],),
+        "ast": ("EXTRA", ("NAME", ("STRING", "extraTag1")), ("VALUE", ("STRING", "extraTagValue"))),
+        "raw_tree": {"EXTRA": {"NAME": {"STRING": "extraTag1"}, "VALUE": {"STRING": "extraTagValue"}}},
+        "tree": {"EXTRA": {"NAME": {"STRING": "extraTag1"}, "VALUE": {"STRING": "extraTagValue"}}},
         "equivalent": "",
         "match_ids": [],
     },
     "case_simple_status": {
         "name": "case_simple_status",
-        "queries": ["/statusName1"],
+        "queries": ("/statusName1"),
         "status": "✔",
-        "tokens": [('PREFIX_STATUS', '/'), ('IDENTIFIER', 'statusName1')],
-        "ast": {},
-        "raw_tree": {},
-        "tree": {},
+        "tokens": ([("PREFIX_STATUS", "/"), ("IDENTIFIER", "statusName1")],),
+        "ast": ("STATUS", ("STRING", "statusName1")),
+        "raw_tree": {"STATUS": {"STRING": "statusName1"}},
+        "tree": {"STATUS": {"STRING": "statusName1"}},
         "equivalent": "",
         "match_ids": [],
     },
     "case_simple_rating": {
         "name": "case_simple_rating",
-        "queries": ["*3.3"],
+        "queries": ("*3.3"),
         "status": "✔",
-        "tokens": [],
-        "ast": {},
-        "raw_tree": {},
-        "tree": {},
+        "tokens": ([("PREFIX_RATING", "*"), ("NUMBER", "3.3")],),
+        "ast": ("RATING", ("VALUE", 3.3), ("INTERPRETATION", "AT_LEAST")),
+        "raw_tree": {"RATING": {"VALUE": 3.3, "INTERPRETATION": "AT_LEAST"}},
+        "tree": {"RATING": {"VALUE": 3.3, "INTERPRETATION": "AT_LEAST"}},
         "equivalent": "",
         "match_ids": [],
     },
     "case_simple_tag": {
         "name": "case_simple_tag",
-        "queries": ["tagName"],
+        "queries": ("tagName"),
         "status": "✔",
-        "tokens": [],
-        "ast": {},
-        "raw_tree": {},
-        "tree": {},
+        "tokens": ([("IDENTIFIER", "tagName")],),
+        "ast": ("TAG", ("STRING", "tagName")),
+        "raw_tree": {"TAG": {"STRING": "tagName"}},
+        "tree": {"TAG": {"STRING": "tagName"}},
         "equivalent": "",
         "match_ids": [],
     },
     "case_simple_tag_subtag": {
         "name": "case_simple_tag_subtag",
-        "queries": ["tagName1:subtagName1"],
+        "queries": ("tagName1:subtagName1"),
         "status": "✔",
-        "tokens": [],
-        "ast": {},
-        "raw_tree": {},
-        "tree": {},
+        "tokens": ([('IDENTIFIER', 'tagName1'), ('BIND', ':'), ('IDENTIFIER', 'subtagName1')],),
+        "ast": ('TAG', ('STRING', 'tagName1'), ('SUBTAG', ('STRING', 'subtagName1'))),
+        "raw_tree": {
+    "TAG": {
+        "STRING": "tagName1",
+        "SUBTAG": {
+            "STRING": "subtagName1"
+        }
+    }
+},
+        "tree": {
+    "TAG": {
+        "STRING": "tagName1",
+        "SUBTAG": {
+            "STRING": "subtagName1"
+        }
+    }
+},
         "equivalent": "",
         "match_ids": [],
     },
     "case_simple_embeddedregex": {
         "name": "case_simple_embeddedregex",
-        "queries": ["〈[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?〉"],
+        "queries": ("〈[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?〉"),
         "status": "✔",
-        "tokens": [],
-        "ast": {},
-        "raw_tree": {},
-        "tree": {},
+        "tokens": ([('REGEX_EMBEDDED_OPEN', '〈'), ('REGEX_EMBEDDED', '[rR]eg.xd,d[[2,4]]-[A-Z]+s?'), ('REGEX_EMBEDDED_CLOSE', '〉')],),
+        "ast": ('TAG', ('REGEX', '[rR]eg.xd,d[[2,4]]-[A-Z]+s?')),
+        "raw_tree": {
+    "TAG": {
+        "REGEX": "[rR]eg.xd,d[[2,4]]-[A-Z]+s?"
+    }
+},
+        "tree": {
+    "TAG": {
+        "REGEX": "[rR]eg.xd,d[[2,4]]-[A-Z]+s?"
+    }
+},
         "equivalent": "",
         "match_ids": [],
     },
     "case_simple_textregex": {
         "name": "case_simple_textregex",
-        "queries": ["⸨[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?⸩"],
+        "queries": ("⸨[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?⸩"),
         "status": "✔",
-        "tokens": [],
-        "ast": {},
-        "raw_tree": {},
-        "tree": {},
+        "tokens": ([('REGEX_TEXT_OPEN', '⸨'), ('REGEX_TEXT', '[rR]eg.xd,d[[2,4]]-[A-Z]+s?'), ('REGEX_TEXT_CLOSE', '⸩')],),
+        "ast": ('REGEX_TEXT', ('REGEX', '[rR]eg.xd,d[[2,4]]-[A-Z]+s?')),
+        "raw_tree": {
+    "REGEX_TEXT": {
+        "REGEX": "[rR]eg.xd,d[[2,4]]-[A-Z]+s?"
+    }
+},
+        "tree": {
+    "REGEX_TEXT": {
+        "REGEX": "[rR]eg.xd,d[[2,4]]-[A-Z]+s?"
+    }
+},
         "equivalent": "",
         "match_ids": [],
     },
     "case_simple_fullregex": {
         "name": "case_simple_fullregex",
-        "queries": ["⦃[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?⦄"],
+        "queries": ("⦃[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?⦄"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -291,9 +291,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_linkregex": {
         "name": "case_simple_linkregex",
-        "queries": ["«[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?»"],
+        "queries": ("«[rR]eg.x\d,\d[[2,4]]-[A-Z]+\s?»"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -302,9 +302,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_type_subtype": {
         "name": "case_simple_type_subtype",
-        "queries": ["%typeName:subtypeName"],
+        "queries": ("%typeName:subtypeName"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -313,9 +313,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_type": {
         "name": "case_simple_type",
-        "queries": ["%typeName"],
+        "queries": ("%typeName"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -324,9 +324,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_date_created": {
         "name": "case_simple_date_created",
-        "queries": ["©2022-03-15"],
+        "queries": ("©2022-03-15"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -335,9 +335,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_date_modified": {
         "name": "case_simple_date_modified",
-        "queries": ["^2024-06-17"],
+        "queries": ("^2024-06-17"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -346,9 +346,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_proglang": {
         "name": "case_simple_proglang",
-        "queries": ["❱haskell"],
+        "queries": ("❱haskell"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -357,9 +357,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_language": {
         "name": "case_simple_language",
-        "queries": ["€EN"],
+        "queries": ("€EN"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -368,9 +368,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_and_single_neg": {
         "name": "case_and_single_neg",
-        "queries": ["~a.~b"],
+        "queries": ("~a.~b"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -379,9 +379,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_and_neg": {
         "name": "case_and_neg",
-        "queries": ["~ab.~cd"],
+        "queries": ("~ab.~cd"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -390,9 +390,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_or_single_neg": {
         "name": "case_or_single_neg",
-        "queries": ["~a.~b"],
+        "queries": ("~a.~b"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -401,9 +401,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_or_neg": {
         "name": "case_or_neg",
-        "queries": ["~ab.~cd"],
+        "queries": ("~ab.~cd"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -412,9 +412,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_precedence_neg": {
         "name": "case_precedence_neg",
-        "queries": ["~tag1.~tag2,~tag3"],
+        "queries": ("~tag1.~tag2,~tag3"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -423,9 +423,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_extra_neg": {
         "name": "case_simple_extra_neg",
-        "queries": ["+~extraTag1"],
+        "queries": ("+~extraTag1"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -434,9 +434,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_status_neg": {
         "name": "case_simple_status_neg",
-        "queries": ["/~status1"],
+        "queries": ("/~status1"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -445,9 +445,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_rating_neg": {
         "name": "case_simple_rating_neg",
-        "queries": ["*~4"],
+        "queries": ("*~4"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -456,9 +456,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_tag_neg": {
         "name": "case_simple_tag_neg",
-        "queries": ["~tagName1"],
+        "queries": ("~tagName1"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -467,9 +467,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_tag_subtag_neg": {
         "name": "case_simple_tag_subtag_neg",
-        "queries": ["tagName1:~subtagName"],
+        "queries": ("tagName1:~subtagName"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -478,9 +478,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_embeddedregex_neg": {
         "name": "case_simple_embeddedregex_neg",
-        "queries": ["~〈someRegex〉"],
+        "queries": ("~〈someRegex〉"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -489,9 +489,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_textregex_neg": {
         "name": "case_simple_textregex_neg",
-        "queries": ["~⸨someRegex⸩"],
+        "queries": ("~⸨someRegex⸩"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -500,9 +500,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_fullregex_neg": {
         "name": "case_simple_fullregex_neg",
-        "queries": ["~⟪someRegex⟫"],
+        "queries": ("~⟪someRegex⟫"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -511,9 +511,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_type_subtype_neg": {
         "name": "case_simple_type_subtype_neg",
-        "queries": ["%typeName:~subtypeName"],
+        "queries": ("%typeName:~subtypeName"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -522,9 +522,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_type_neg": {
         "name": "case_simple_type_neg",
-        "queries": ["%~typeName"],
+        "queries": ("%~typeName"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -533,9 +533,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_date_created_neg": {
         "name": "case_simple_date_created_neg",
-        "queries": ["©~2022-03-15"],
+        "queries": ("©~2022-03-15"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -544,9 +544,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_date_modified_neg": {
         "name": "case_simple_date_modified_neg",
-        "queries": ["^~2024-06-17"],
+        "queries": ("^~2024-06-17"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -555,9 +555,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_proglang_neg": {
         "name": "case_simple_proglang_neg",
-        "queries": ["❱~haskell"],
+        "queries": ("❱~haskell"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -566,9 +566,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_language_neg": {
         "name": "case_simple_language_neg",
-        "queries": ["€~EN"],
+        "queries": ("€~EN"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -577,9 +577,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_rating_exact": {
         "name": "case_simple_rating_exact",
-        "queries": ["*~~4.0"],
+        "queries": ("*~~4.0"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -588,9 +588,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_date_created_exact": {
         "name": "case_simple_date_created_exact",
-        "queries": ["©~~2019-04-06"],
+        "queries": ("©~~2019-04-06"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -599,9 +599,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_date_modified_exact": {
         "name": "case_simple_date_modified_exact",
-        "queries": ["^~~2021-07-10"],
+        "queries": ("^~~2021-07-10"),
         "status": "✔",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -610,9 +610,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_and_single_opt": {
         "name": "case_and_single_opt",
-        "queries": ["?a.?b"],
+        "queries": ("?a.?b"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -621,9 +621,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_and_opt": {
         "name": "case_and_opt",
-        "queries": ["?ab.?cd"],
+        "queries": ("?ab.?cd"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -632,9 +632,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_or_single_opt": {
         "name": "case_or_single_opt",
-        "queries": ["?a,?b"],
+        "queries": ("?a,?b"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -643,9 +643,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_or_opt": {
         "name": "case_or_opt",
-        "queries": ["?ab.?cd"],
+        "queries": ("?ab.?cd"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -654,9 +654,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_or_opt": {
         "name": "case_or_opt",
-        "queries": ["?ab.?cd"],
+        "queries": ("?ab.?cd"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -665,9 +665,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_precedence_opt": {
         "name": "case_precedence_opt",
-        "queries": ["?tag1.?tag2,?tag3"],
+        "queries": ("?tag1.?tag2,?tag3"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -676,9 +676,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_extra_opt": {
         "name": "case_simple_extra_opt",
-        "queries": ["+?extraTagName:extraTagValue"],
+        "queries": ("+?extraTagName:extraTagValue"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -687,9 +687,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_status_opt": {
         "name": "case_simple_status_opt",
-        "queries": ["/?status"],
+        "queries": ("/?status"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -698,9 +698,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_rating_opt": {
         "name": "case_simple_rating_opt",
-        "queries": ["*?4.1"],
+        "queries": ("*?4.1"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -709,9 +709,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_tag_opt": {
         "name": "case_simple_tag_opt",
-        "queries": ["?tagString"],
+        "queries": ("?tagString"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -720,9 +720,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_tag_subtag_opt": {
         "name": "case_simple_tag_subtag_opt",
-        "queries": ["tagString:?subtagString"],
+        "queries": ("tagString:?subtagString"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -731,9 +731,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_embeddedregex_opt": {
         "name": "case_simple_embeddedregex_opt",
-        "queries": ["?〈someRegex〉"],
+        "queries": ("?〈someRegex〉"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -742,9 +742,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_textregex_opt": {
         "name": "case_simple_textregex_opt",
-        "queries": ["?⸨someRegex⸩"],
+        "queries": ("?⸨someRegex⸩"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -753,9 +753,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_fullregex_opt": {
         "name": "case_simple_fullregex_opt",
-        "queries": ["?⟪someRegex⟫"],
+        "queries": ("?⟪someRegex⟫"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -764,9 +764,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_type_subtype_opt": {
         "name": "case_simple_type_subtype_opt",
-        "queries": ["typeName:?subtypeName"],
+        "queries": ("typeName:?subtypeName"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -775,9 +775,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_type_opt": {
         "name": "case_simple_type_opt",
-        "queries": ["%?typeName"],
+        "queries": ("%?typeName"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -788,9 +788,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     # case_simple_date_modified_opt = ""
     "case_simple_proglang_opt": {
         "name": "case_simple_proglang_opt",
-        "queries": ["❱?python"],
+        "queries": ("❱?python"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -799,9 +799,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_language_opt": {
         "name": "case_simple_language_opt",
-        "queries": ["€?EN"],
+        "queries": ("€?EN"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -810,9 +810,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_and_single_neg_opt": {
         "name": "case_and_single_neg_opt",
-        "queries": ["?~a.?~b"],
+        "queries": ("?~a.?~b"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -821,9 +821,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_and_neg_opt": {
         "name": "case_and_neg_opt",
-        "queries": ["?~ab.cd"],
+        "queries": ("?~ab.cd"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -832,9 +832,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_or_single_neg_opt": {
         "name": "case_or_single_neg_opt",
-        "queries": ["?~a.?~b"],
+        "queries": ("?~a.?~b"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -843,9 +843,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_or_neg_opt": {
         "name": "case_or_neg_opt",
-        "queries": ["?~ab.cd"],
+        "queries": ("?~ab.cd"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -854,9 +854,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_precedence_neg_opt": {
         "name": "case_precedence_neg_opt",
-        "queries": ["?~tag1,?~tag2.tag3"],
+        "queries": ("?~tag1,?~tag2.tag3"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -865,9 +865,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_extra_neg_opt": {
         "name": "case_simple_extra_neg_opt",
-        "queries": ["?~extraName:extraValue"],
+        "queries": ("?~extraName:extraValue"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -876,9 +876,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_status_neg_opt": {
         "name": "case_simple_status_neg_opt",
-        "queries": ["/?~statusName"],
+        "queries": ("/?~statusName"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -887,9 +887,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_rating_neg_opt": {
         "name": "case_simple_rating_neg_opt",
-        "queries": ["*?~3.0"],
+        "queries": ("*?~3.0"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -898,9 +898,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_tag_neg_opt": {
         "name": "case_simple_tag_neg_opt",
-        "queries": ["?~tagName"],
+        "queries": ("?~tagName"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -909,9 +909,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_tag_subtag_neg_opt": {
         "name": "case_simple_tag_subtag_neg_opt",
-        "queries": ["tagName:?~subtagName"],
+        "queries": ("tagName:?~subtagName"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -920,9 +920,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_embeddedregex_neg_opt": {
         "name": "case_simple_embeddedregex_neg_opt",
-        "queries": ["?~〈someRegex〉"],
+        "queries": ("?~〈someRegex〉"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -931,9 +931,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_textregex_neg_opt": {
         "name": "case_simple_textregex_neg_opt",
-        "queries": ["?~⸨someRegex⸩"],
+        "queries": ("?~⸨someRegex⸩"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -942,9 +942,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_fullregex_neg_opt": {
         "name": "case_simple_fullregex_neg_opt",
-        "queries": ["?~⟪someRegex⟫"],
+        "queries": ("?~⟪someRegex⟫"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -953,9 +953,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_type_subtype_neg_opt": {
         "name": "case_simple_type_subtype_neg_opt",
-        "queries": ["%typeName:?~subtypeName"],
+        "queries": ("%typeName:?~subtypeName"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -964,9 +964,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_type_neg_opt": {
         "name": "case_simple_type_neg_opt",
-        "queries": ["%?~typeName"],
+        "queries": ("%?~typeName"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -975,9 +975,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_date_created_neg_opt": {
         "name": "case_simple_date_created_neg_opt",
-        "queries": ["©?~2025-12-31"],
+        "queries": ("©?~2025-12-31"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -986,9 +986,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_date_modified_neg_opt": {
         "name": "case_simple_date_modified_neg_opt",
-        "queries": ["^?~2030-04-05"],
+        "queries": ("^?~2030-04-05"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -997,9 +997,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_proglang_neg_opt": {
         "name": "case_simple_proglang_neg_opt",
-        "queries": ["❱?~python"],
+        "queries": ("❱?~python"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -1008,9 +1008,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_language_neg_opt": {
         "name": "case_simple_language_neg_opt",
-        "queries": ["€?~EN"],
+        "queries": ("€?~EN"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -1020,9 +1020,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     # need to tokenize this as EXACT_NOT
     "case_simple_rating_neg_exact": {
         "name": "case_simple_rating_neg_exact",
-        "queries": ["*~~~3.0"],
+        "queries": ("*~~~3.0"),
         "status": "x",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -1031,9 +1031,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_date_created_neg_exact": {
         "name": "case_simple_date_created_neg_exact",
-        "queries": ["©~~~2023-05-31"],
+        "queries": ("©~~~2023-05-31"),
         "status": "x",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -1042,9 +1042,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_date_modified_neg_exact": {
         "name": "case_simple_date_modified_neg_exact",
-        "queries": ["^~~~2024-11-21"],
+        "queries": ("^~~~2024-11-21"),
         "status": "x",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -1053,9 +1053,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_rating_neg_exact_opt": {
         "name": "case_simple_rating_neg_exact_opt",
-        "queries": ["?~~~4.5"],
+        "queries": ("?~~~4.5"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -1064,9 +1064,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_date_created_neg_exact_opt": {
         "name": "case_simple_date_created_neg_exact_opt",
-        "queries": ["©?~~~2022-10-13"],
+        "queries": ("©?~~~2022-10-13"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},
@@ -1075,9 +1075,9 @@ def parse_and_output_all(query: str) -> tuple: ...
     },
     "case_simple_date_modified_neg_exact_opt": {
         "name": "case_simple_date_modified_neg_exact_opt",
-        "queries": ["?~~~2020-05-18"],
+        "queries": ("?~~~2020-05-18"),
         "status": " ",
-        "tokens": [],
+        "tokens": (),
         "ast": {},
         "raw_tree": {},
         "tree": {},

@@ -93,12 +93,16 @@ def parse_status(tokens: list[tuple[str, str]]) -> tuple[tuple]:
         string_tuple = ("STRING", status_string)
     elif typ == "REGEX_EMBEDDED":
         string_tuple = ("REGEX", status_string)
+    else:
+        raise ValueError
+    
+    status_tuple = ("STATUS", string_tuple)
 
     return {
-        (True, True): ("OPT", ("NOT", string_tuple)),
-        (True, False): ("OPT", string_tuple),
-        (False, True): ("NOT", string_tuple),
-        (False, False): string_tuple
+        (True, True): ("OPT", ("NOT", status_tuple)),
+        (True, False): ("OPT", status_tuple),
+        (False, True): ("NOT", status_tuple),
+        (False, False): status_tuple
     }[(opt, neg)]
 
 
@@ -218,20 +222,24 @@ def parse_rating(tokens: list[tuple[str, str]]) -> tuple[tuple]:
     *A
     """
     opt, neg, exact = itemgetter("OPT", "NEG", "EXACT")(parse_modifiers(tokens))
-
-    #-----
-    _tuple = {
-        (True, True): ("OPT", ("NOT", ("", ))),
-        (True, False): ("OPT", ("STRING", )),
-        (False, True): ("NOT", ("STRING", )),
-        (False, False): ("STRING", )
-    }[(opt, neg)]
-    #-----
     
-    token = tokens.pop(0)
-    typ = token[0]
-    if typ == "NUMBER":
-        return ("RATING", ("STRING", token[1]))
+
+    typ, val = tokens.pop(0)
+    assert typ == "NUMBER"
+    value_tuple = ("VALUE", float(val))
+    
+    return {
+        (False, False, False): ("RATING", value_tuple, ("INTERPRETATION", "AT_LEAST")),
+        (False, False, True):  ("RATING", value_tuple, ("INTERPRETATION", "EXACT")),
+        (False, True, False):  ("NOT", ("RATING", value_tuple, ("INTERPRETATION", "AT_MOST"))),
+        (False, True, True):   ("NOT", ("RATING", value_tuple, ("INTERPRETATION", "EXCLUDE"))),
+        (True, False, False):  ("OPT", ("RATING", value_tuple, ("INTERPRETATION", "AT_LEAST"))),
+        (True, False, True):   ("OPT", ("RATING", value_tuple, ("INTERPRETATION", "EXACT"))),
+        (True, True, False):   ("OPT", ("NOT", ("RATING", value_tuple, ("INTERPRETATION", "AT_MOST")))),
+        (True, True, True):    ("OPT", ("NOT", ("RATING", value_tuple, ("INTERPRETATION", "EXCLUDE")))),
+    }[(opt, neg, exact)]
+    
+    
     # if typ == "LBRACE":
     #     return parse_homogeneous(tokens, "RATING")
     raise ValueError
